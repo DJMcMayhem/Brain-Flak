@@ -21,7 +21,7 @@ class Stack
   end
 
   def print
-    while @data.length > 1 do
+    while @data.length > 0 do
         puts pop
     end
   end
@@ -64,13 +64,26 @@ right = Stack.new('Right')
 main_stack = Stack.new('Main')
 active = left
 
-source_file = File.open('source.brack', 'r')
-source = source_file.read
-source_length = source.length
-
 source_index = 0
 current_value = 0
 error = false
+
+if ARGV.length < 1 then
+  puts "Welcome to Brain-Flak!"\
+       "\nUsage:"\
+       "brain_flak source_file"\
+       "brain_flak source_file args\n"
+  exit
+end
+
+source_path = ARGV[0]
+source_file = File.open(source_path, 'r')
+source = source_file.read
+source_length = source.length
+
+ARGV[1..-1].each do|a|
+  active.push(a.to_i)
+end
 
 while true do
   current_symbol = source[source_index..source_index+1] or source[source_index]
