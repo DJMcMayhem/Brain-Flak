@@ -12,8 +12,8 @@ class Stack
     end
   end
 
-  def push(n)
-    @data.push(n)
+  def push(current_value)
+    @data.push(current_value)
   end
   
   def peek
@@ -31,22 +31,22 @@ class Stack
   end
 end
 
-def is_opening_bracket(b)
-  return "([{<".include? b
+def is_opening_bracket?(b)
+  return '([{<'.include? b
 end
 
-def is_closing_bracket(b)
-  return ")]}>".include? b
+def is_closing_bracket?(b)
+  return ')]}>'.include? b
 end
 
-def brackets_match(b1, b2)
-  s = [b1, b2].join("")
-  return ["()", "[]", "{}", "<>"].include? s
+def brackets_match?(b1, b2)
+  s = [b1, b2].join('')
+  return ['()', '[]', '{}', '<>'].include? s
 end
 
 def read_until_stack_end(s, start)
   stack_height = 0
-  for i in (start + 1 .. s.length)
+  for i in (start + 1..s.length)
     if s[i] == '{' then
       stack_height += 1
     elsif s[i] == '}'
@@ -59,82 +59,77 @@ def read_until_stack_end(s, start)
   return nil
 end
 
-left = Stack.new("Left")
-right = Stack.new("Right")
-main_stack = Stack.new("Main")
+left = Stack.new('Left')
+right = Stack.new('Right')
+main_stack = Stack.new('Main')
 active = left
 
-source_file = File.open("source.brack", "r")
+source_file = File.open('source.brack', 'r')
 source = source_file.read
-len = source.length
+source_length = source.length
 
-i = 0
-n = 0
+source_index = 0
+current_value = 0
 error = false
+
 while true do
-  cur = source[i..i+1] or source[i]
-  if i >= source.length then
+  current_symbol = source[source_index..source_index+1] or source[source_index]
+  if source_index >= source.length then
     break
   end
 
-  if ['()', '[]', '{}', '<>'].include? cur then
-    if cur == '()' then
-      n += 1
-    elsif cur == '[]' then
-      n -= 1
-    elsif cur == '{}' then
-      n += active.pop
-    else
-      if active == left then 
-        active = right
+  if ['()', '[]', '{}', '<>'].include? current_symbol 
+    case current_symbol
+      when '()' then current_value += 1
+      when '[]' then current_value -= 1
+      when '{}' then current_value += active.pop
+      when '<>' then active = active == left ? right : left
       else
-        active = left
-      end
+        error = true
+        break
     end
-    i += 2
+    source_index += 2
+
   else
-    cur = cur[0]
-    if is_opening_bracket(cur) then
-      if cur == '{' and active.peek == 0 then
-        new_index = read_until_stack_end(source, i)
+    current_symbol = current_symbol[0]
+    if is_opening_bracket?(current_symbol) then
+      if current_symbol == '{' and active.peek == 0 then
+        new_index = read_until_stack_end(source, source_index)
         if new_index == nil then
           error = true
           break
         else
-          i = new_index
+          source_index = new_index
         end
       else
-        main_stack.push([cur, n, i])
+        main_stack.push([current_symbol, current_value, source_index])
       end
-      n = 0
-    elsif is_closing_bracket(cur) then
+      current_value = 0
+    elsif is_closing_bracket?(current_symbol) then
       data = main_stack.pop
-      if not brackets_match(data[0], cur) then
+      if not brackets_match?(data[0], current_symbol) then
         error = true
         break
-      elsif cur == ')' then
-        active.push(n)
-      elsif cur == ']' then
-        puts n
-      elsif cur == '>' then
-        n = 0
-      elsif cur == '}' then
-        if active.peek != 0 then
-          i = data[2] - 1
-        end
       end
+
+      case current_symbol
+        when ')' then active.push(current_value)
+        when ']' then puts current_value
+        when '>' then current_value = 0
+        when '}' then source_index = data[2] - 1 if active.peek != 0
+        end
     end
-    i += 1
+    source_index += 1
   end
 
-  if i >= len then
+  if source_index >= source_length then
     break
   end
 
 end
 
 if error then
-  puts "Invalid character in source file!"
+  puts 'Invalid character in source file!'
   exit
 end
 
