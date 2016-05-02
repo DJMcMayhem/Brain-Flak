@@ -17,7 +17,10 @@ class Stack
   end
   
   def peek
-    return @data.last
+    if @data.length != 0 then return @data.last
+    else
+      return 0  
+    end  
   end
 
   def print
@@ -138,6 +141,15 @@ while true do
   if source_index >= source_length then
     break
   end
+
+#  puts current_symbol
+#  puts "Active:"
+#  active.talk
+#  puts "Left:"
+#  left.print
+#  puts "Right:"
+#  right.print
+#  STDIN.gets.chomp
 
 end
 
