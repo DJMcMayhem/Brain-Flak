@@ -17,10 +17,7 @@ class Stack
   end
   
   def peek
-    if @data.length != 0 then return @data.last
-    else
-      return 0  
-    end  
+    return @data.last || 0
   end
 
   def print
@@ -49,10 +46,10 @@ end
 
 def read_until_stack_end(s, start)
   stack_height = 0
-  for i in (start + 1..s.length)
-    if s[i] == '{' then
-      stack_height += 1
-    elsif s[i] == '}'
+  s[start + 1..s.length].each_char.with_index(1) do |c, i|
+    case c
+    when '{' then stack_height += 1
+    when '}' then
       stack_height -= 1
       if stack_height == -1 then
         return i
@@ -121,6 +118,7 @@ while true do
         main_stack.push([current_symbol, current_value, source_index])
       end
       current_value = 0
+
     elsif is_closing_bracket?(current_symbol) then
       data = main_stack.pop
       if not brackets_match?(data[0], current_symbol) then
@@ -141,15 +139,6 @@ while true do
   if source_index >= source_length then
     break
   end
-
-#  puts current_symbol
-#  puts "Active:"
-#  active.talk
-#  puts "Left:"
-#  left.print
-#  puts "Right:"
-#  right.print
-#  STDIN.gets.chomp
 
 end
 
