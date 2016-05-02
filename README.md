@@ -46,16 +46,16 @@ That's it. That's the whole language.
 
 #Sample code
 
-Here are some snippets that do useful things.
+Here are some full programs that do interesting things.
+
+Adding two numbers:
 
     ({}{})
 
-Add the two numbers on top of the active stack.
+Subtracting two numbers:
 
-    (({}))
+    ({}<>){({}[])<>({}[])<>}<>
 
-Duplicate the number on top of the active stack.
+Multiplying two numbers:
 
-    ({}<>)
-
-Shift a number from the top of one stack to the top of the other stack.
+    ({}<>)<>({}[]){({}[])<>(({}))<>}<>{({}<>{})<>}<>
