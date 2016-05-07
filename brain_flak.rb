@@ -93,7 +93,8 @@ while true do
 
   if ['()', '[]', '{}', '<>'].include? current_symbol 
     case current_symbol
-      when '()' then current_value += 1
+      when '()' then 
+        current_value += 1
       when '[]' then current_value -= 1
       when '{}' then current_value += active.pop
       when '<>' then active = active == left ? right : left
@@ -132,6 +133,8 @@ while true do
         when '>' then current_value = 0
         when '}' then source_index = data[2] - 1 if active.peek != 0
         end
+
+      current_value += data[1]
     end
     source_index += 1
   end
