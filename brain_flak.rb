@@ -52,7 +52,7 @@ def read_until_stack_end(s, start)
     when '}' then
       stack_height -= 1
       if stack_height == -1 then
-        return i
+        return i + start
       end
     end
   end
