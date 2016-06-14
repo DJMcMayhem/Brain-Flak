@@ -31,6 +31,17 @@ class Stack
   end
 end
 
+class BrainFlakError < StandardError
+
+  attr_reader :cause, :pos
+
+  def initialize(cause,pos)
+    @cause = cause
+    @pos = pos
+    super("Error at character %d: %s" % [pos, cause])
+  end
+end
+
 def is_opening_bracket?(b)
   return '([{<'.include? b
 end
@@ -52,7 +63,7 @@ def read_until_stack_end(s, start)
     when '}' then
       stack_height -= 1
       if stack_height == -1 then
-        return i
+        return i + start
       end
     end
   end
@@ -61,12 +72,11 @@ end
 
 left = Stack.new('Left')
 right = Stack.new('Right')
-main_stack = Stack.new('Main')
+main_stack = []
 active = left
 
 source_index = 0
 current_value = 0
-error = false
 
 if ARGV.length < 1 then
   puts "Welcome to Brain-Flak!"\
@@ -85,69 +95,67 @@ ARGV[1..-1].each do|a|
   active.push(a.to_i)
 end
 
-while true do
-  current_symbol = source[source_index..source_index+1] or source[source_index]
-  if source_index >= source.length then
-    break
-  end
-
-  if ['()', '[]', '{}', '<>'].include? current_symbol 
-    case current_symbol
-      when '()' then 
-        current_value += 1
-      when '[]' then current_value -= 1
-      when '{}' then current_value += active.pop
-      when '<>' then active = active == left ? right : left
-      else
-        error = true
-        break
+begin
+  while true do
+    current_symbol = source[source_index..source_index+1] or source[source_index]
+    if source_index >= source.length then
+      break
     end
-    source_index += 2
 
-  else
-    current_symbol = current_symbol[0]
-    if is_opening_bracket?(current_symbol) then
-      if current_symbol == '{' and active.peek == 0 then
-        new_index = read_until_stack_end(source, source_index)
-        if new_index == nil then
-          error = true
-          break
-        else
-          source_index = new_index
-        end
-      else
-        main_stack.push([current_symbol, current_value, source_index])
-      end
-      current_value = 0
-
-    elsif is_closing_bracket?(current_symbol) then
-      data = main_stack.pop
-      if not brackets_match?(data[0], current_symbol) then
-        error = true
-        break
-      end
-
+    if ['()', '[]', '{}', '<>'].include? current_symbol 
       case current_symbol
-        when ')' then active.push(current_value)
-        when ']' then puts current_value
-        when '>' then current_value = 0
-        when '}' then source_index = data[2] - 1 if active.peek != 0
+        when '()' then 
+          current_value += 1
+        when '[]' then current_value -= 1
+        when '{}' then current_value += active.pop
+        when '<>' then active = active == left ? right : left
+        else
+          raise "Expected niliad found %s. This should never occur!" % current_symbol
+      end
+      source_index += 2
+
+    else
+      current_symbol = current_symbol[0]
+      if is_opening_bracket?(current_symbol) then
+        if current_symbol == '{' and active.peek == 0 then
+          new_index = read_until_stack_end(source, source_index)
+          if new_index == nil then
+            raise BrainFlakError.new("Unmatched {", source_index + 1)
+          else
+            source_index = new_index
+          end
+        else
+          main_stack.push([current_symbol, current_value, source_index])
+        end
+        current_value = 0
+
+      elsif is_closing_bracket?(current_symbol) then
+        data = main_stack.pop
+        if data == nil then
+          raise BrainFlakError.new("Unmatched " + current_symbol, source_index + 1)
+        elsif not brackets_match?(data[0], current_symbol) then
+          raise BrainFlakError.new("Mismatched closing bracket %s. Expected to close %s at character %d" % [current_symbol, data[0], data[2] + 1], source_index + 1)
         end
 
-      current_value += data[1]
+        case current_symbol
+          when ')' then active.push(current_value)
+          when ']' then puts current_value
+          when '>' then current_value = 0
+          when '}' then source_index = data[2] - 1 if active.peek != 0
+          end
+
+        current_value += data[1]
+      end
+      source_index += 1
     end
-    source_index += 1
+
+    if source_index >= source_length then
+      break
+    end
+
   end
 
-  if source_index >= source_length then
-    break
-  end
-
+  active.print
+rescue BrainFlakError => e
+  puts e.message
 end
-
-if error then
-  puts 'Invalid character in source file!'
-  exit
-end
-
-active.print
