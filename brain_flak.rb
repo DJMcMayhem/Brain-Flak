@@ -4,7 +4,7 @@ class BrainFlakError < StandardError
 
   attr_reader :cause, :pos
 
-  def initialize(cause,pos)
+  def initialize(cause, pos)
     @cause = cause
     @pos = pos
     super("Error at character %d: %s" % [pos, cause])
@@ -94,12 +94,12 @@ begin
         data = main_stack.pop
         if data == nil then
           raise BrainFlakError.new(
-            "Unmatched closing bracket. %s closed at %d without matching opening bracket."%[current_symbol,source_index + 1],
+            "Unmatched closing bracket. %s closed at %d without matching opening bracket."%[current_symbol, source_index + 1],
             source_index + 1
           )
         elsif not brackets_match?(data[0], current_symbol) then
           raise BrainFlakError.new(
-            "Mismatched brackets. %s opened at %d closed by %s at %d."%[data[0],data[2] + 1,current_symbol,source_index + 1],
+            "Mismatched brackets. %s opened at %d closed by %s at %d."%[data[0], data[2] + 1, current_symbol, source_index + 1],
             source_index + 1
           )
         end
@@ -112,6 +112,11 @@ begin
           end
 
         current_value += data[1]
+      elsif current_symbol.match(/\S/)
+        raise BrainFlakError.new(
+          "Illegal character: '%s' at %d."%[current_symbol, source_index + 1],
+          source_index + 1
+        )
       end
       source_index += 1
     end
