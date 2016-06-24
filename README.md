@@ -58,7 +58,7 @@ Subtracting two numbers:
 
 Multiplying two numbers:
 
-    ({}<>)<>({}[]){({}[])<>(({}))<>}<>{({}<>{})<>}<>
+    ({}<({}<>)(<>)>){([]{}<<>(({})<>)({}{})>)}{}<>{}<>
 
 Print the first *N* Fibonacci numbers:
 
