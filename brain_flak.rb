@@ -1,35 +1,4 @@
-class Stack
-  def initialize(name)
-    @name = name
-    @data = []
-  end
-
-  def pop
-    if @data.length != 0 then
-      return @data.pop
-    else
-      return 0
-    end
-  end
-
-  def push(current_value)
-    @data.push(current_value)
-  end
-  
-  def peek
-    return @data.last || 0
-  end
-
-  def print
-    while @data.length > 0 do
-        puts pop
-    end
-  end
-
-  def talk
-    puts @name
-  end
-end
+require './stack.rb'
 
 class BrainFlakError < StandardError
 
@@ -42,20 +11,7 @@ class BrainFlakError < StandardError
   end
 end
 
-def is_opening_bracket?(b)
-  return '([{<'.include? b
-end
-
-def is_closing_bracket?(b)
-  return ')]}>'.include? b
-end
-
-def brackets_match?(b1, b2)
-  s = [b1, b2].join('')
-  return ['()', '[]', '{}', '<>'].include? s
-end
-
-def read_until_stack_end(s, start)
+def read_until_matching(s, start)
   stack_height = 0
   s[start + 1..s.length].each_char.with_index(1) do |c, i|
     case c
@@ -102,15 +58,15 @@ begin
       break
     end
 
-    if ['()', '[]', '{}', '<>'].include? current_symbol 
+    if ['()', '[]', '{}', '<>'].include? current_symbol
       case current_symbol
-        when '()' then 
+        when '()' then
           current_value += 1
         when '[]' then current_value -= 1
         when '{}' then current_value += active.pop
         when '<>' then active = active == left ? right : left
         else
-          raise "Expected niliad found %s. This should never occur!" % current_symbol
+          raise "Expected nilad found %s. This should never occur!" % current_symbol
       end
       source_index += 2
 
@@ -119,7 +75,7 @@ begin
       if is_opening_bracket?(current_symbol) then
         #If the stack is empty the enclosed code is skipped
         if current_symbol == '{' and active.peek == 0 then
-          new_index = read_until_stack_end(source, source_index)
+          new_index = read_until_matching(source, source_index)
           if new_index == nil then
             raise BrainFlakError.new(
               "Unmatched open bracket. { opened at %d without matching closing bracket." % [source_index+1],
