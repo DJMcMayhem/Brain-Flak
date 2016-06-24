@@ -120,7 +120,10 @@ begin
         if current_symbol == '{' and active.peek == 0 then
           new_index = read_until_stack_end(source, source_index)
           if new_index == nil then
-            raise BrainFlakError.new("Unmatched {", source_index + 1)
+            raise BrainFlakError.new(
+              "Unmatched open bracket. { opened at %d without matching closing bracket." % [source_index+1],
+              source_index+1
+            )
           else
             source_index = new_index
           end
@@ -132,9 +135,15 @@ begin
       elsif is_closing_bracket?(current_symbol) then
         data = main_stack.pop
         if data == nil then
-          raise BrainFlakError.new("Unmatched " + current_symbol, source_index + 1)
+          raise BrainFlakError.new(
+            "Unmatched closing bracket. %s closed at %d without matching opening bracket."%[current_symbol,source_index + 1],
+            source_index + 1
+          )
         elsif not brackets_match?(data[0], current_symbol) then
-          raise BrainFlakError.new("Mismatched closing bracket %s. Expected to close %s at character %d" % [current_symbol, data[0], data[2] + 1], source_index + 1)
+          raise BrainFlakError.new(
+            "Mismatched brackets. %s opened at %d closed by %d at %d"%[data[0],data[2],current_symbol,source_index + 1],
+            source_index + 1
+          )
         end
 
         case current_symbol
@@ -150,6 +159,12 @@ begin
     end
 
     if source_index >= source_length then
+      for item in main_stack do
+        raise BrainFlakError.new(
+          "Unmatched open bracket. %s opened at %d without matching closing bracket." % [item[0], item[2]],
+          source_length
+        )
+      end
       break
     end
 
