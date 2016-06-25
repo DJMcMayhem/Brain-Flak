@@ -65,7 +65,7 @@ class BrainFlakInterpreter
       current_symbol = current_symbol[0]
       if is_opening_bracket?(current_symbol) then
         if current_symbol == '{' and @active_stack.peek == 0 then
-          new_index = read_until_stack_end(@source, @index)
+          new_index = read_until_matching(@source, @index)
           raise BrainFlakError.new("Unmatched {", @index + 1) if new_index == nil
           @index = new_index
         else
