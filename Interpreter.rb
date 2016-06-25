@@ -40,7 +40,11 @@ class BrainFlakInterpreter
     @current_value = 0
     @running = @source.length > 0
     args.each do|a|
-      @active_stack.push(a.to_i)
+      if a =~ /\d+/
+        @active_stack.push(a.to_i)
+      else
+        raise BrainFlakError.new("Invalid integer in input", 0)
+      end
     end
   end
 
