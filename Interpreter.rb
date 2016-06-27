@@ -75,7 +75,7 @@ class BrainFlakInterpreter
 
       elsif is_closing_bracket?(current_symbol) then
         data = @main_stack.pop
-        raise BrainFlakError.new("Unmatched " + current_symbol, source_index + 1) if data == nil
+        raise BrainFlakError.new("Unmatched " + current_symbol, @index + 1) if data == nil
         raise BrainFlakError.new("Mismatched closing bracket %s. Expected to close %s at character %d" % [current_symbol, data[0], data[2] + 1], @index + 1) if not brackets_match?(data[0], current_symbol)
 
         case current_symbol
