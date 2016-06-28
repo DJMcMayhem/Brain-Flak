@@ -30,7 +30,7 @@ class BrainFlakInterpreter
 
   attr_reader :active_stack, :running
 
-  def initialize(source, args)
+  def initialize(source, args, debug)
     @source = source
     @left = Stack.new('Left')
     @right = Stack.new('Right')
@@ -44,6 +44,26 @@ class BrainFlakInterpreter
         @active_stack.push(a.to_i)
       else
         raise BrainFlakError.new("Invalid integer in input", 0)
+      end
+    end
+    remove_debug_flags(debug)
+  end
+
+  def remove_debug_flags(debug)
+    while match = /#[^#()\[\]{}<>]*/.match(@source) do
+      str = @souce.slice!(m.begin(0)..m.end(0)-1)
+
+      if debug then
+        case str
+          when "#dv"
+            # do something
+          when "#dc"
+            # do something
+          when "#dl"
+            # do something
+          when "#dr"
+            # do something
+        end
       end
     end
   end

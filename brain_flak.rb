@@ -53,7 +53,7 @@ source_file = File.open(source_path, 'r')
 source = source_file.read
 source_length = source.length
 
-interpreter = BrainFlakInterpreter.new(source, numbers)
+interpreter = BrainFlakInterpreter.new(source, numbers, debug)
 
 begin
   while interpreter.running do
