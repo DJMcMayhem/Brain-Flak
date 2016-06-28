@@ -39,6 +39,8 @@ class BrainFlakInterpreter
     @index = 0
     @current_value = 0
     @running = @source.length > 0
+    # Hash.new([]) does not work since modifications change that original array
+    @debug_flags = Hash.new{|h,k| h[k] = []} if debug
     args.each do|a|
       if a =~ /\d+/
         @active_stack.push(a.to_i)
@@ -51,18 +53,18 @@ class BrainFlakInterpreter
 
   def remove_debug_flags(debug)
     while match = /#[^#()\[\]{}<>]*/.match(@source) do
-      str = @souce.slice!(m.begin(0)..m.end(0)-1)
+      str = @source.slice!(match.begin(0)..match.end(0)-1)
 
       if debug then
         case str
           when "#dv"
-            # do something
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dv)
           when "#dc"
-            # do something
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dc)
           when "#dl"
-            # do something
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dl)
           when "#dr"
-            # do something
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dr)
         end
       end
     end
