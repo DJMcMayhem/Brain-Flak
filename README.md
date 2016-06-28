@@ -2,6 +2,8 @@
 
 Brain-Flak is an "Turing-tarpit", e.g. a language which can, *in theory* compute anything, but in reality is very inconvenient and painful to use. It was heavily inspired by [Brainf**k](https://esolangs.org/wiki/Brainfuck), the original turing-tarpit.
 
+To get started with Brain-Flak, download the project from here, and run `ruby brain-flak.rb inputs`. Additionally, you can [try it online](http://brain-flak.tryitonline.net/)! (Online intrepreter provided thanks to [@DennisMitchell](https://github.com/DennisMitchell))
+
 #Tutorial
 
 Brain-Flak has two stacks, known as 'left' and 'right'. The active stack starts at left. If an empty stack is popped, it will return 0. That's it. No other variables. When the program starts, each command line argument is pushed on to the active stack.
@@ -66,7 +68,7 @@ Multiplying two numbers (Positive only):
 
 Multiplying two numbers (Any):
 
-    (({})){{}(<>)<>(({}))(()){{}({}[]<({}()<(({}<>)<>)>)>)(({}<(({}))>))({}<({}<({}<>)<>>)<>({}<>)>)({}<(({})){{}{}(())(<><>)}{}>)(({})){{}{}(())(<><>)}{}({}{}[])}{}<>({{}})<>{{}<>{({}[]<([])>)}{}({{}})(<>)}{}{}{}(<>{}<{}><>)({}(<><>))(<><>)}{}({}<{}>)
+    (({})){{}(<>)<>(({}))(()){{}({}[]<({}()<(({}<>)<>)>)>)(({}<(({}))>))({}<({}<({}<>)<>>)<>({}<>)>)({}<(({})){{}{}(<(())>)}{}>)(({})){{}{}(<(())>)}{}({}{}[])}{}<>({{}})<>{{}<>{({}[]<([])>)}{}({{}})(<>)}{}{}{}(<>{}<{}><>)(<({}(<><>))>)}{}({}<{}>)
 
 Integer divide two numbers (Positive only):
 
