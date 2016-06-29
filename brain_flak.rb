@@ -10,11 +10,18 @@ if ARGV.length < 1 then
 end
 
 source_path = ARGV[0]
+if ARGV[1] == '-f'
+  input_file = File.open(ARGV[2], 'r')
+  numbers = input_file.read.gsub(/\s+/m, ' ').strip.split(" ")
+elsif
+  numbers = ARGV[1..-1]
+end
+
 source_file = File.open(source_path, 'r')
 source = source_file.read
 source_length = source.length
 
-interpreter = BrainFlakInterpreter.new(source, ARGV[1..-1])
+interpreter = BrainFlakInterpreter.new(source, numbers)
 
 begin
   while interpreter.running do
