@@ -29,6 +29,10 @@ class Stack
   def talk
     puts @name
   end
+
+  def inspect_array
+    return @data.inspect
+  end
 end
 
 def is_opening_bracket?(b)

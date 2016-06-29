@@ -41,6 +41,7 @@ class BrainFlakInterpreter
     @running = @source.length > 0
     # Hash.new([]) does not work since modifications change that original array
     @debug_flags = Hash.new{|h,k| h[k] = []} if debug
+    @last_op = :none
     args.each do|a|
       if a =~ /\d+/
         @active_stack.push(a.to_i)
@@ -70,9 +71,27 @@ class BrainFlakInterpreter
     end
   end
 
+  def do_debug_flag(index)
+    @debug_flags[index].each do |flag|
+      print "#" + flag.to_s + " "
+      case flag
+        when :dv then puts @current_value
+        when :dc then puts @active_stack.inspect_array
+        when :dl then puts @left.inspect_array
+        when :dr then puts @right.inspect_array
+      end
+    end
+  end
+
   def step()
     if @running == false then
       return false
+    end
+    if @last_op == :nilad then
+      do_debug_flag(@index-1)
+    end
+    if @last_op != :close_curly then
+      do_debug_flag(@index)
     end
     current_symbol = @source[@index..@index+1] or @source[@index]
     if ['()', '[]', '{}', '<>'].include? current_symbol
@@ -82,8 +101,10 @@ class BrainFlakInterpreter
         when '{}' then @current_value += @active_stack.pop
         when '<>' then @active_stack = @active_stack == @left ? @right : @left
       end
+      @last_op = :nilad
       @index += 2
     else
+      @last_op = :monad
       current_symbol = current_symbol[0]
       if is_opening_bracket?(current_symbol) then
         if current_symbol == '{' and @active_stack.peek == 0 then
@@ -104,7 +125,11 @@ class BrainFlakInterpreter
           when ')' then @active_stack.push(@current_value)
           when ']' then puts @current_value
           when '>' then @current_value = 0
-          when '}' then @index = data[2] - 1 if @active_stack.peek != 0
+          when '}'
+            if @active_stack.peek != 0 then
+              @index = data[2] - 1
+              @last_op = :close_curly
+            end
         end
         @current_value += data[1]
       end
