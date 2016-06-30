@@ -31,7 +31,7 @@ class BrainFlakInterpreter
   attr_reader :active_stack, :running
 
   def initialize(source, args, debug)
-  	# Strips the source of any characters that aren't brackets or part of debug flags
+    # Strips the source of any characters that aren't brackets or part of debug flags
     @source = source.gsub(/(?:(?<=[()\[\]{}<>])|\s|^)[^#()\[\]{}<>]+/, "")
     @left = Stack.new('Left')
     @right = Stack.new('Right')
@@ -77,7 +77,9 @@ class BrainFlakInterpreter
       print "#" + flag.to_s + " "
       case flag
         when :dv then puts @current_value
-        when :dc then puts @active_stack.inspect_array
+        when :dc then
+          print @active_stack == @left ? "(left) " : "(right) "
+          puts @active_stack.inspect_array
         when :dl then puts @left.inspect_array
         when :dr then puts @right.inspect_array
       end
