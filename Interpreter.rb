@@ -31,7 +31,8 @@ class BrainFlakInterpreter
   attr_reader :active_stack, :running
 
   def initialize(source, args, debug)
-    @source = source
+  	# Strips the source of any characters that aren't brackets or part of debug flags
+    @source = source.gsub(/(?:(?<=[()\[\]{}<>])|\s|^)[^#()\[\]{}<>]+/, "")
     @left = Stack.new('Left')
     @right = Stack.new('Right')
     @main_stack = []
