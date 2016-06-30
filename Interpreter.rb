@@ -54,7 +54,7 @@ class BrainFlakInterpreter
   end
 
   def remove_debug_flags(debug)
-    while match = /#[^#()\[\]{}<>]*/.match(@source) do
+    while match = /#[^#()\[\]{}<>\s]*/.match(@source) do
       str = @source.slice!(match.begin(0)..match.end(0)-1)
 
       if debug then
