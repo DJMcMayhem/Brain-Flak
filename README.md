@@ -64,7 +64,7 @@ Subtracting two numbers (Any):
 
 Multiplying two numbers (Positive only):
 
-    (<>)<>({}<>)<>{({}[])<>(({}))<>}{}<>{}({{}}{}<>)
+    ({}<>)<>({<({}[])><>({})<>}{})<>{}<>
 
 Multiplying two numbers (Any):
 
