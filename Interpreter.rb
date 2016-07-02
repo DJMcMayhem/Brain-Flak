@@ -93,4 +93,11 @@ class BrainFlakInterpreter
       @running = false
     end
   end
+
+  def finish
+    if @main_stack.length > 0
+      unmatched_brak = @main_stack[0]
+      raise BrainFlakError.new("Unclosed '%s' character." % unmatched_brak[0], unmatched_brak[2])
+    end
+  end
 end
