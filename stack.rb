@@ -29,6 +29,10 @@ class Stack
   def talk
     puts @name
   end
+
+  def height
+    return @data.length
+  end
 end
 
 def is_opening_bracket?(b)

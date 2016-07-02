@@ -28,7 +28,8 @@ begin
     interpreter.step
   end
 
+  interpreter.finish
   interpreter.active_stack.print
 rescue BrainFlakError => e
-  puts e.message
+  STDERR.puts e.message
 end
