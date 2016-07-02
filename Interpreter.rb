@@ -56,7 +56,7 @@ class BrainFlakInterpreter
     if ['()', '[]', '{}', '<>'].include? current_symbol
       case current_symbol
         when '()' then @current_value += 1
-        when '[]' then @current_value -= 1
+        when '[]' then @current_value += @active_stack.height
         when '{}' then @current_value += @active_stack.pop
         when '<>' then @active_stack = @active_stack == @left ? @right : @left
       end
@@ -80,7 +80,7 @@ class BrainFlakInterpreter
 
         case current_symbol
           when ')' then @active_stack.push(@current_value)
-          when ']' then puts @current_value
+          when ']' then @current_value *= -1
           when '>' then @current_value = 0
           when '}' then @index = data[2] - 1 if @active_stack.peek != 0
         end
