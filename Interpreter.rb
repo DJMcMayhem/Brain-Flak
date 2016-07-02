@@ -31,7 +31,7 @@ class BrainFlakInterpreter
   attr_reader :active_stack, :running
 
   def initialize(source, args)
-    @source = source
+    @source = source.gsub(/\s+/, "")
     @left = Stack.new('Left')
     @right = Stack.new('Right')
     @main_stack = []
@@ -85,6 +85,7 @@ class BrainFlakInterpreter
           when '}' then @index = data[2] - 1 if @active_stack.peek != 0
         end
         @current_value += data[1]
+      else raise BrainFlakError.new("Invalid character '%s.'" % current_symbol, @index + 1)
       end
       @index += 1
     end
