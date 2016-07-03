@@ -10,22 +10,22 @@ Brain-Flak has two stacks, known as 'left' and 'right'. The active stack starts 
 
 The only valid characters in a Brain-Flak program are `()[()]{}<>`, and they must always be balanced. There are two types of functions: *Nilads* and *Monads*. A *nilad* is a function that takes 0 arguments. Here are all of the nilads:
 
- - `()` +1.
- - `[()]` *1.
- - `{}` Pop the active stack.
- - `<>` Toggle the active stack.
+ - `()` Evaluates to one.
+ - `[]` Evaluates to the height of the current stack.
+ - `{}` Pop the active stack. Evaluates to the popped value.
+ - `<>` Toggle the active stack. Evaluates to zero.
 
 These are concatenated together when they are evaluated. So if we had a '3' on top of the active stack, this snippet:
 
     ()(){}
   
-would evaluate to `1 + 1 + active.pop()` which would evaluate to 5. `<>` evaluates to 0.
+would evaluate to `1 + 1 + active.pop()` which would evaluate to 5.
 
 The monads take one argument, a chunk of Brain-Flak code. Here are all of the monads:
 
  - `(n)` Push 'n' on the active stack.
- - `[n]` Negative 'n'
- - `{foo}` While active.peek() != 0, do foo.
+ - `[n]` Evaluates to negative 'n'
+ - `{foo}` While zero is not on the top of the stack, do foo.
  - `<foo>` Execute foo, but evaluate it as 0.
 
 These functions will also return the value inside of them, so
@@ -37,6 +37,12 @@ Will push 3 but
     ((()()()))
 
 Will push 3 *twice*.
+
+The `{}` will evaluate to the sum of all runs.  So if we had '3' and '4' on the top of the stack:
+
+    {{}}
+
+would evaluate as 7.
 
 When the program is done executing, each value left on the active stack is printed, with a newline between. Values on the other stack are ignored.
 
@@ -50,13 +56,9 @@ Adding two numbers:
 
     ({}{})
 
-Subtracting two numbers (Positive only):
+Subtracting two numbers:
 
-    {({}[()]<({}[()])>)}{}
-
-Subtracting two numbers (Any):
-
-    {({}<>(<>)<>)(({}))(()){{}({}[()]<({}())>)(({}<(({}))>))<>(())<>({}<({}<({}<>)<>>)<>({}<>)>)({}<(({})){{}{}(<(())>)}{}>)(({})){{}{}(<(())>)}{}({}{}[()])}{}<>({{}})<>{{}<>({}{}{})(<>)}{}{{}<>({}<{}>){({}[()]<({}[()])>)}{}(<>)}}{}
+    ([{}]{})
 
 Multiplying two numbers (Positive only):
 
@@ -64,7 +66,7 @@ Multiplying two numbers (Positive only):
 
 Multiplying two numbers (Any):
 
-    (({})){{}(<>)<>(({}))(()){{}({}[()]<({}()<(({}<>)<>)>)>)(({}<(({}))>))({}<({}<({}<>)<>>)<>({}<>)>)({}<(({})){{}{}(<(())>)}{}>)(({})){{}{}(<(())>)}{}({}{}[()])}{}<>({{}})<>{{}<>{({}[()]<([()])>)}{}({{}})(<>)}{}{}{}(<>{}<{}><>)(<({}(<><>))>)}{}({}<{}>)
+    ({}<>)<>([({})])({<({}())><>({})}{}<{}<>{}<>>)
 
 Integer divide two numbers (Positive only):
 
