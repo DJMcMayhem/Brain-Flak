@@ -30,8 +30,9 @@ class BrainFlakInterpreter
 
   attr_reader :active_stack, :running
 
-  def initialize(source, args)
-    @source = source.gsub(/\s+/, "")
+  def initialize(source, args, debug)
+    # Strips the source of any characters that aren't brackets or part of debug flags
+    @source = source.gsub(/(?:(?<=[()\[\]{}<>])|\s|^)[^#()\[\]{}<>]+/, "")
     @left = Stack.new('Left')
     @right = Stack.new('Right')
     @main_stack = []
@@ -39,6 +40,9 @@ class BrainFlakInterpreter
     @index = 0
     @current_value = 0
     @running = @source.length > 0
+    # Hash.new([]) does not work since modifications change that original array
+    @debug_flags = Hash.new{|h,k| h[k] = []}
+    @last_op = :none
     args.each do|a|
       if a =~ /\d+/
         @active_stack.push(a.to_i)
@@ -46,11 +50,51 @@ class BrainFlakInterpreter
         raise BrainFlakError.new("Invalid integer in input", 0)
       end
     end
+    remove_debug_flags(debug)
+  end
+
+  def remove_debug_flags(debug)
+    while match = /#[^#()\[\]{}<>\s]*/.match(@source) do
+      str = @source.slice!(match.begin(0)..match.end(0)-1)
+
+      if debug then
+        case str
+          when "#dv"
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dv)
+          when "#dc"
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dc)
+          when "#dl"
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dl)
+          when "#dr"
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dr)
+        end
+      end
+    end
+  end
+
+  def do_debug_flag(index)
+    @debug_flags[index].each do |flag|
+      print "#" + flag.to_s + " "
+      case flag
+        when :dv then puts @current_value
+        when :dc then
+          print @active_stack == @left ? "(left) " : "(right) "
+          puts @active_stack.inspect_array
+        when :dl then puts @left.inspect_array
+        when :dr then puts @right.inspect_array
+      end
+    end
   end
 
   def step()
     if @running == false then
       return false
+    end
+    if @last_op == :nilad then
+      do_debug_flag(@index-1)
+    end
+    if @last_op != :close_curly then
+      do_debug_flag(@index)
     end
     current_symbol = @source[@index..@index+1] or @source[@index]
     if ['()', '[]', '{}', '<>'].include? current_symbol
@@ -60,8 +104,10 @@ class BrainFlakInterpreter
         when '{}' then @current_value += @active_stack.pop
         when '<>' then @active_stack = @active_stack == @left ? @right : @left
       end
+      @last_op = :nilad
       @index += 2
     else
+      @last_op = :monad
       current_symbol = current_symbol[0]
       if is_opening_bracket?(current_symbol) then
         if current_symbol == '{' and @active_stack.peek == 0 then
@@ -82,7 +128,11 @@ class BrainFlakInterpreter
           when ')' then @active_stack.push(@current_value)
           when ']' then @current_value *= -1
           when '>' then @current_value = 0
-          when '}' then @index = data[2] - 1 if @active_stack.peek != 0
+          when '}'
+            if @active_stack.peek != 0 then
+              @index = data[2] - 1
+              @last_op = :close_curly
+            end
         end
         @current_value += data[1]
       else raise BrainFlakError.new("Invalid character '%s.'" % current_symbol, @index + 1)
