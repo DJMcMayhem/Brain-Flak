@@ -41,7 +41,7 @@ class BrainFlakInterpreter
     @current_value = 0
     @running = @source.length > 0
     # Hash.new([]) does not work since modifications change that original array
-    @debug_flags = Hash.new{|h,k| h[k] = []} if debug
+    @debug_flags = Hash.new{|h,k| h[k] = []}
     @last_op = :none
     args.each do|a|
       if a =~ /\d+/
