@@ -100,7 +100,7 @@ class BrainFlakInterpreter
     if ['()', '[]', '{}', '<>'].include? current_symbol
       case current_symbol
         when '()' then @current_value += 1
-        when '[]' then @current_value -= 1
+        when '[]' then @current_value += @active_stack.height
         when '{}' then @current_value += @active_stack.pop
         when '<>' then @active_stack = @active_stack == @left ? @right : @left
       end
@@ -126,7 +126,7 @@ class BrainFlakInterpreter
 
         case current_symbol
           when ')' then @active_stack.push(@current_value)
-          when ']' then puts @current_value
+          when ']' then @current_value *= -1
           when '>' then @current_value = 0
           when '}'
             if @active_stack.peek != 0 then
@@ -135,11 +135,19 @@ class BrainFlakInterpreter
             end
         end
         @current_value += data[1]
+      else raise BrainFlakError.new("Invalid character '%s.'" % current_symbol, @index + 1)
       end
       @index += 1
     end
     if @index >= @source.length then
       @running = false
+    end
+  end
+
+  def finish
+    if @main_stack.length > 0
+      unmatched_brak = @main_stack[0]
+      raise BrainFlakError.new("Unclosed '%s' character." % unmatched_brak[0], unmatched_brak[2])
     end
   end
 end

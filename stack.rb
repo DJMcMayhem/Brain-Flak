@@ -33,6 +33,10 @@ class Stack
   def inspect_array
     return @data.inspect
   end
+
+  def height
+    return @data.length
+  end
 end
 
 def is_opening_bracket?(b)
