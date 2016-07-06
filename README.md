@@ -8,7 +8,7 @@ To get started with Brain-Flak, download the project from here, and run `ruby br
 
 Brain-Flak has two stacks, known as 'left' and 'right'. The active stack starts at left. If an empty stack is popped, it will return 0. That's it. No other variables. When the program starts, each command line argument is pushed on to the active stack.
 
-The only valid characters in a Brain-Flak program are `()[()]{}<>`, and they must always be balanced. There are two types of functions: *Nilads* and *Monads*. A *nilad* is a function that takes 0 arguments. Here are all of the nilads:
+The only valid characters in a Brain-Flak program are `()[]{}<>`, and they must always be balanced. There are two types of functions: *Nilads* and *Monads*. A *nilad* is a function that takes 0 arguments. Here are all of the nilads:
 
  - `()` Evaluates to one.
  - `[]` Evaluates to the height of the current stack.
