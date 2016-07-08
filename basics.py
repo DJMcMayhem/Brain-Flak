@@ -42,6 +42,8 @@ def findMatch(snippet, index):
 
 def balanced(snippet):
 	stack = []
+	if snippet[0] in ")}>]":
+		return False
 	for character in snippet:
 		if character in "({<[":
 			stack.append(character)

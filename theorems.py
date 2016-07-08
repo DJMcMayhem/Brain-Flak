@@ -124,7 +124,7 @@ def substrings(snippet):
 def valueReduce(snippet):
 	result = ""
 	while re.search("[A\[\]<>]{2,}",snippet):
-		location = re.search("[A\[\]<>]+",snippet).span()
+		location = re.search("[A\[\]<>]{2,}",snippet).span()
 		section = snippet[location[0]:location[1]]
 		#Theres got to be a better way to do this
 		#I am really tired right now and I'll fix it later
@@ -145,8 +145,9 @@ def valueReduce(snippet):
 	return result + snippet
 
 def valuePercolate(snippet):
+	#TODO fix leapfrogging
 	result = ""
-	while re.search("[A\[\]<>]{2,}",snippet):
+	while re.search("[A\[\]<>]+",snippet):
 		location = re.search("[A\[\]<>]+",snippet).span()
 		section = snippet[location[0]:location[1]]
 		#Theres got to be a better way to do this
@@ -158,11 +159,19 @@ def valuePercolate(snippet):
 		#returns the largest
 		possibilities = substrings(section)
 		possibilities = filter(balanced,possibilities)
-		if possiblities != []:
-			largest = max(possibilites, key=len)
-			start = location[0]+re.search(largest.replace("[","\[").replace("]","\]"), section).span()[0]
-			end   = location[0]+re.search(largest.replace("[","\[").replace("]","\]"), section).span()[1]
-			
+		if possibilities != []:
+			largest = max(possibilities, key=len)
+			sublocation = re.search(largest.replace("[","\[").replace("]","\]"), section).span()
+			start = location[0]+sublocation[0]
+			end   = location[0]+sublocation[1]
+			index = end
+			result += snippet[:start]
+			#Find the right edge of the current scope
+			while (snippet+")")[index] not in ")}>]": #Stop if closing scope (virtual parenthesis at the end of the program)
+				index = findMatch(snippet,index)+1
+			result += snippet[end:index]
+			result += snippet[start:end]
+			snippet = snippet[index:]
 		else:
 			result += snippet[:location[1]]
 			snippet = snippet[location[1]:]
@@ -170,21 +179,18 @@ def valuePercolate(snippet):
 
 def negativeReduce(snippet):
 	#This can be made more powerful in the future
+	#Perhaps this can be combined with modifier reduce
 	while re.search("(\[\[|\]\])",snippet):
 		if re.search("\[\[",snippet):
 			location = re.search("\[\[",snippet).span()
 			start = location[1]
 			end = findMatch(snippet,location[1]-1)
-			snippet = snippet[:location[0]] + snippet[start:end] + "[" + snippet[end+1:]
+			snippet = cleanup(snippet[:location[0]] + snippet[start:end] + "[" + snippet[end+1:])
 		else:
-			#This is currently broken
 			location = re.search("\]\]",snippet).span()
-			start = location[0]
-			print snippet[start]
-			end = findMatch(snippet,location[0])
-			snippet = snippet[:end] + "]" + snippet[end:start] + snippet[start:]
-	return snippet		
+			start = findMatch(snippet,location[0])
+			snippet = cleanup(snippet[:start] + "]" + snippet[start+1:location[0]] + snippet[location[1]+1:])
+	return snippet
 
 if __name__ == "__main__":
-	print negativeReduce(clean("({}<()>)"))
-
+	print valuePercolate(clean("((){}(){})"))

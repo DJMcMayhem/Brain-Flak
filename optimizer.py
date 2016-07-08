@@ -18,12 +18,13 @@ def colorPrint(snippet):
 	string = string.replace("D","[]")
 	print string
 
-snip = "((()){})"
+snip = "({}<([()]{})>)({}<({}())>)"
 
 last = ""
 current = clean(snip)
 
 theoremList = [
+	theorems.valuePercolate,
 	theorems.valueSponger,
 	theorems.modifierSponger,
 	theorems.anglePercolate,
@@ -31,7 +32,8 @@ theoremList = [
 	theorems.pushReduce,
 	theorems.modifierReduce,
 	theorems.loopReduce,
-	theorems.valueReduce
+	theorems.valueReduce,
+	theorems.negativeReduce,
 ]
 
 while last != current:
