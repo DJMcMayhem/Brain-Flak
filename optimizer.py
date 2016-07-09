@@ -18,7 +18,7 @@ def colorPrint(snippet):
 	string = string.replace("D","[]")
 	print string
 
-snip = "({}<([()]{})>)({}<({}())>)"
+snip = "(["+"()"*23+"])"
 
 last = ""
 current = clean(snip)

@@ -62,7 +62,7 @@ def pushReduce(snippet):
 	result = ""
 	finder = re.compile("\)[\(<\[AD]*B")
 	while re.search(finder,snippet):
-		zeroData = zeroReturn(snippet)
+		zeroData = zeroReturn(result+snippet)[len(result):]
 		search = re.search(finder,snippet)
 		if search:
 			location = search.span()
@@ -70,7 +70,7 @@ def pushReduce(snippet):
 				end = findMatch(snippet,location[0])+1
 				snippet = snippet[:end-1] + snippet[location[0]+1:location[1]-1] + snippet[end:location[0]] + snippet[location[1]:]
 			else:
-				result = snippet[:location[1]]
+				result += snippet[:location[1]]
 				snippet = snippet[location[1]:]
 	return result + snippet
 
@@ -91,7 +91,7 @@ def getValue(snippet):
 def factors(n):    
 	return reduce(list.__add__, ([x, n//x] for x in range(1, int(n**0.5) + 1) if n % x == 0))
 
-def getSequence(value):
+def getSimpleSequence(value):
 	if value < 0:
 		return "["+getSequence(-value)+"]"
 	if value == 0:
@@ -116,6 +116,19 @@ def getSequence(value):
 			#In which case you just get n*"()"
 			#There might be room for optimization here
 			return getSequence(value-1) + "()"
+
+def getSequence(value):
+	if value < 0:
+		return "["+getSequence(-value)+"]"
+	if value == 0:
+		return "<><>"
+	if value <= 5:
+		#For values less than or equal to four cannot be expressed more simply than n*"()" 
+		return "()" * value
+	else:
+		#This could really be optimized
+		#This has an absurd run time
+		return min(getSimpleSequence(value),getSequence(value-1))
 
 def substrings(snippet):
 	length = len(snippet)
@@ -193,4 +206,5 @@ def negativeReduce(snippet):
 	return snippet
 
 if __name__ == "__main__":
-	print valuePercolate(clean("((){}(){})"))
+	for x in range(1,1000):
+		print x,len(factors(x))
