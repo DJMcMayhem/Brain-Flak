@@ -8,5 +8,6 @@ from loopReduce import loopReduce
 from negativeReduce import negativeReduce
 from pushReduce import pushReduce
 from valueReduce import valueReduce
+from zeroReduce import zeroReduce
 
 from basics import *
