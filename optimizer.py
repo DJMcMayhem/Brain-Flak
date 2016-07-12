@@ -1,9 +1,8 @@
 import re
 import theorems
-from basics import *
 
 def colorPrint(snippet):
-	zeroData = zeroReturn(snippet)
+	zeroData = theorems.zeroReturn(snippet)
 	string = ""
 	for entry in zeroData:
 		if entry[0]:
@@ -21,7 +20,7 @@ def colorPrint(snippet):
 snip = "(["+"()"*23+"])"
 
 last = ""
-current = clean(snip)
+current = theorems.clean(snip)
 
 theoremList = [
 	theorems.valuePercolate,
