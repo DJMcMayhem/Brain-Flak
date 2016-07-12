@@ -17,13 +17,14 @@ def colorPrint(snippet):
 	string = string.replace("D","[]")
 	print string
 
-snip = "(["+"()"*23+"])"
+snip = "({<{}>}<>{<{}>})"
 
 last = ""
 current = theorems.clean(snip)
 
 theoremList = [
 	theorems.valuePercolate,
+	theorems.modifierPercolate,
 	theorems.valueSponger,
 	theorems.modifierSponger,
 	theorems.anglePercolate,
@@ -33,6 +34,7 @@ theoremList = [
 	theorems.loopReduce,
 	theorems.valueReduce,
 	theorems.negativeReduce,
+	theorems.zeroReduce
 ]
 
 while last != current:

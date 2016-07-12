@@ -1,5 +1,6 @@
 from valuePercolate import valuePercolate
 from anglePercolate import anglePercolate
+from modifierPercolate import modifierPercolate
 from angleSponger import angleSponger
 from valueSponger import valueSponger
 from modifierSponger import modifierSponger
