@@ -2,11 +2,12 @@ from basics import *
 import re
 
 def getValue(snippet):
+	assert balanced(snippet)
 	while re.search("<",snippet):
 		location = re.search("<",snippet).span()
 		snippet = snippet[:location[0]] + snippet[findMatch(snippet,location[0])+1:]
 	snippet = snippet.replace("A","()")
-	atoms = atomize(snippet).split("\n")
+	atoms = filter(lambda x:x!="",atomize(snippet).split("\n"))
 	sum = 0
 	for atom in atoms:
 		if atom == "()":
