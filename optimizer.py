@@ -17,28 +17,22 @@ def colorPrint(snippet):
 	string = string.replace("D","[]")
 	print string
 
-snip = "({<{}>}<>{<{}>})"
-
-last = ""
-current = theorems.clean(snip)
-
-theoremList = [
-	theorems.valuePercolate,
-	theorems.modifierPercolate,
-	theorems.valueSponger,
-	theorems.modifierSponger,
-	theorems.anglePercolate,
-	theorems.angleSponger,
-	theorems.pushReduce,
-	theorems.modifierReduce,
-	theorems.loopReduce,
-	theorems.valueReduce,
-	theorems.negativeReduce,
-	theorems.zeroReduce
-]
-
-while last != current:
+def optimize(snippet):
+	current = theorems.clean(snippet)
+	first = ""
 	colorPrint(current)
-	last = current
-	for theorem in theoremList:
-		current = theorem(current)
+	while first != current:
+		first = current
+		last = current
+		for theorem in theorems.theoremList:
+			current = theorem(current)
+			if current != last:
+				print theorem
+				assert theorems.balanced(current)
+				colorPrint(current)
+				last = current
+	return current
+
+snip = "([[[()()()()]()()()()()()()()()()()()()()()()[()()()()()()()()()]]{}[()()()()()()()]]()()()()()()()()()()()()()()()()()()()()()()()())"
+
+optimize(snip)

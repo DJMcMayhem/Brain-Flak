@@ -54,6 +54,8 @@ def balanced(snippet):
 			stack.append(character)
 		if character in ")}>]":
 			#TODO make this stricter
+			if stack == []:
+				return False
 			stack = stack[:-1]
 	return stack == []
 

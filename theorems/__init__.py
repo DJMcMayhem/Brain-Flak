@@ -12,3 +12,18 @@ from valueReduce import valueReduce
 from zeroReduce import zeroReduce
 
 from basics import *
+
+theoremList = [
+	valuePercolate,
+	anglePercolate,
+	modifierPercolate,
+	angleSponger,
+	valueSponger,
+	modifierSponger,
+	modifierReduce,
+	loopReduce,
+	negativeReduce,
+	pushReduce,
+	zeroReduce,
+	valueReduce
+]

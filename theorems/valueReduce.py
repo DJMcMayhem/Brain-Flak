@@ -108,4 +108,4 @@ def valueReduce(snippet):
 	return result + snippet
 
 if __name__ == "__main__":
-	print getSequence(121)
+	print valueReduce("[{}AAAA[AAAAA]]AAAAA")
