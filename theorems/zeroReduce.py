@@ -1,57 +1,40 @@
 from basics import *
+import re
 
 '''
-zero reduce makes expressions that push zero to the stack more effecient
+reducablePushes finds all regex matches in with a zeroReturn at the start
 
-It does so by wrapping and zeroing a earlier expression
+This will return a list of zeros that are reducable
+'''
 
-{{}}(<><>) --> (<{{}}>)
+def reducableZeros(snippet):
+	zeroData = zeroReturn(snippet)
+	return filter(lambda x: zeroData[x.span()[0]][0],re.finditer("[^\(\{<\[][\(<\[AB]*CC",snippet))
 
-It can only do so if the previous expression is in a zero return scope
-or if the earlier expression is already zeroed
+'''
+zeroReduce makes pushing zeros to the stack more effective
 
- ({}(<><>))  --> ({}(<><>))
+It does this by capturing and zeroing zero returning code segments
 
-(<{}>(<><>)) -->  ((<{}>))
+e.g.
+ {}(<><>)  -->   (<{}>)
 
-It also allows for multiple levels of push
-
-{}((<><>)) --> ((<{}>))
+({}(<><>)) --> ({}(<><>))
 '''
 
 def zeroReduce(snippet):
-	result = ""
-	finder = re.compile("\(*CC\)*")
-	while re.search(finder,snippet):
-		zeroData = zeroReturn(snippet)
-		location = re.search(finder,snippet).span()
-		sublocation = re.search("CC",snippet[location[0]:location[1]]).span()
-		if location[0] == 0:
-			#If we are at the start of the snippet do nothing
-			result += snippet[:location[1]]
-		elif snippet[location[0]-1] == ">":
-			#i.e. earlier expression is zeroed
-			end = location[0]
-			start = findMatch(snippet,location[0]-1)
-			result += snippet[:start]
-			result += snippet[location[0]:location[0]+sublocation[0]]
-			result += snippet[start:end]
-			result += snippet[location[0]+sublocation[1]:location[1]]
-		elif zeroData[location[0]-1][0]:
-			end = location[0]
-			start = findMatch(snippet,location[0]-1)
-			result += snippet[:start]
-			result += snippet[location[0]:location[0]+sublocation[0]]
-			result += "<"
-			result += snippet[start:end]
-			result += ">"
-			result += snippet[location[0]+sublocation[1]:location[1]]
-		else:
-			result += snippet[:location[1]]
-		snippet = snippet[location[1]:]
-	return result + snippet
-
+	while reducableZeros(snippet) != []:
+		location = reducableZeros(snippet)[0].span()
+		start = findMatch(snippet,location[0])
+		snippet = (snippet[:start] +                        #Everything before the effected area
+		           snippet[location[0]+1:location[1]-2] +   #Everything between the first character and the "CC" (exclusive)
+		           "<" +                                    #Open zeroer
+		           snippet[start:location[0]+1] +           #Everything between the first character and its match (inclusive)
+		           ">" +                                    #Close zeroer
+		           snippet[location[1]:]                    #Everything after the effected ares
+		)
+	return snippet
 
 if __name__ == "__main__":
-	#Example
-	print zeroReduce(clean("{{}(){}}(<><>)()({}(<><>))()(<><>)"))
+	snippet = clean("<>(<><>)")
+	print zeroReduce(snippet)
