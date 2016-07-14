@@ -43,8 +43,7 @@ def findMatch(snippet, index):
 def balanced(snippet):
 	stack = []
 	#Remove all non brace characters
-	while re.search("[^\(\)\{\}<>\[\]]",snippet):
-		snippet = snippet[:re.search("[^\(\)\{\}<>\[\]]",snippet).span()[0]]+snippet[re.search("[^\(\)\{\}<>\[\]]",snippet).span()[1]:]
+	snippet = re.sub("[^\(\)\{\}<>\[\]]","",snippet)
 	if snippet == "":
 		return True
 	if snippet[0] in ")}>]":
