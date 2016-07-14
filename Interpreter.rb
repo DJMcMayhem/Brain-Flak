@@ -116,8 +116,8 @@ class BrainFlakInterpreter
           @index = new_index
         else
           @main_stack.push([current_symbol, @current_value, @index])
+          @current_value = 0
         end
-        @current_value = 0
 
       elsif is_closing_bracket?(current_symbol) then
         data = @main_stack.pop
