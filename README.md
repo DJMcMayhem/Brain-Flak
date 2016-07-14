@@ -78,7 +78,7 @@ Integer divide two numbers (Any):
 
 Modulo two numbers (Positive only):
 
-    (({}<({}<>)<>>))<>({}<>){({}[()]<(({}[()])){{}(<({}[({})])>)}{}({}({}))>)}{}([{}]{})
+    (({}<>))<>{({}[()])<>(({}[()])){{}(<({}[({})])>)}{}({}({}))<>}{}<>([{}]{})
 
 Print the first *N* Fibonacci numbers:
 
