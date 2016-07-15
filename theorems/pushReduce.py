@@ -9,7 +9,7 @@ This will return a list of pushes that are reducable
 
 def reducablePushes(snippet):
 	zeroData = zeroReturn(snippet)
-	return filter(lambda x: zeroData[x.span()[0]][0],re.finditer("\)[\(<\[AB]*B",snippet))
+	return filter(lambda x: zeroData[x.span()[0]][0],re.finditer("\)[\(<\[AD]*B",snippet))
 
 '''
 pushReduce takes pops that occur after a push and reduces them into a single expression
