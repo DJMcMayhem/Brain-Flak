@@ -1,7 +1,7 @@
 from basics import *
 import re
 
-def modifierSponger(snippet):
+def modifierElim(snippet):
 	zeroData = zeroReturn(snippet)
 	if zeroData == []: return ""
 	zeroData[:] = [x for x in zeroData if not (x[0] and x[1] in "[]<>")]

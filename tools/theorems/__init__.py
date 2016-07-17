@@ -1,9 +1,9 @@
 from valuePercolate import valuePercolate
-from anglePercolate import anglePercolate
+from swapPercolate import swapPercolate
 from modifierPercolate import modifierPercolate
-from angleSponger import angleSponger
-from valueSponger import valueSponger
-from modifierSponger import modifierSponger
+from swapElim import swapElim
+from valueElim import valueElim
+from modifierElim import modifierElim
 from modifierReduce import modifierReduce
 from loopReduce import loopReduce
 from negativeReduce import negativeReduce
@@ -15,11 +15,11 @@ from basics import *
 
 theoremList = [
 	valuePercolate,
-	anglePercolate,
+	swapPercolate,
 	modifierPercolate,
-	angleSponger,
-	valueSponger,
-	modifierSponger,
+	swapElim,
+	valueElim,
+	modifierElim,
 	modifierReduce,
 	loopReduce,
 	negativeReduce,

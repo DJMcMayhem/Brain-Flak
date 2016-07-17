@@ -66,6 +66,13 @@ def clean(string):
 	string = string.replace("[]","D")
 	return string
 
+def flesh(string):
+	string = string.replace("A","()")
+	string = string.replace("B","{}")
+	string = string.replace("C","<>")
+	string = string.replace("D","[]")
+	return string
+
 def zeroed(stack):
 	for brace in stack[::-1]:
 		if brace == "<":

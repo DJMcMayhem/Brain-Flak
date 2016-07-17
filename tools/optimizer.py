@@ -18,6 +18,7 @@ def colorPrint(snippet):
 	print string
 
 def optimize(snippet):
+	size = len(snippet)
 	current = theorems.clean(snippet)
 	first = ""
 	colorPrint(current)
@@ -31,8 +32,10 @@ def optimize(snippet):
 				assert theorems.balanced(current)
 				colorPrint(current)
 				last = current
+	current = theorems.flesh(current)
+	print "Code reduced from %d bytes to %d bytes" %(size,len(current))
 	return current
 
-snip = "([[[()()()()]()()()()()()()()()()()()()()()()[()()()()()()()()()]]{}[()()()()()()()]]()()()()()()()()()()()()()()()()()()()()()()()())"
-
-optimize(snip)
+if __name__ == "__main__":
+	snip = "(<>)<>(({})){({}[()])<>(())<>}{}({}<(({})){({}[()])(<>)<>}{}>)(()){({}<(({})){({}[()])<>{}<>}{}>)<>{<>({}[()])(<>)}<>}({}<({}<{}>)>)<>{}{({}<>{})<>}{}<>(({}<(({}))>))({}<({}<>)<>({}<><({}<>)>)>){({}[()]<({}[()])>)}{}(({})){(<{}{}>)({}<({}<(())>)>)}{}({}<{}{}>)<>{}<>"
+	optimize(snip)

@@ -1,7 +1,7 @@
 from basics import *
 import re
 
-def angleSponger(snippet):
+def swapElim(snippet):
 	snippet = snippet.replace("CC","")
 	snippet = cleanup(snippet)
 	return snippet

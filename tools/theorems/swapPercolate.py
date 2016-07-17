@@ -1,7 +1,7 @@
 from basics import *
 import re
 
-def anglePercolate(snippet):
+def swapPercolate(snippet):
 	snippet = snippet.replace("(C)","a")
 	snippet = snippet.replace("<C>","c")
 	snippet = snippet.replace("[C]","d")

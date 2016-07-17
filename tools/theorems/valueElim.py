@@ -1,7 +1,7 @@
 from basics import *
 import re
 
-def valueSponger(snippet):
+def valueElim(snippet):
 	snippet = snippet.replace("(B)","E")
 	zeroData = zeroReturn(snippet)
 	zeroData[:] = [x for x in zeroData if x not in [(True,"A"),(True,"D"),(True,"E")]]
