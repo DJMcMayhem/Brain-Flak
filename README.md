@@ -2,7 +2,7 @@
 
 Brain-Flak is an "Turing-tarpit", e.g. a language which can, *in theory* compute anything, but in reality is very inconvenient and painful to use. It was heavily inspired by [Brainf**k](https://esolangs.org/wiki/Brainfuck), the original turing-tarpit.
 
-To get started with Brain-Flak, download the project from here, and run `ruby brain-flak.rb inputs`. Additionally, you can [try it online](http://brain-flak.tryitonline.net/)! (Online intrepreter provided thanks to [@DennisMitchell](https://github.com/DennisMitchell))
+To get started with Brain-Flak, download the project from here, and run `ruby brain_flak.rb inputs`. Additionally, you can [try it online](http://brain-flak.tryitonline.net/)! (Online intrepreter provided thanks to [@DennisMitchell](https://github.com/DennisMitchell))
 
 #Tutorial
 
