@@ -85,12 +85,15 @@ class BrainFlakInterpreter
         when :dl then puts @left.inspect_array
         when :dr then puts @right.inspect_array
 	when :df then
-          #TODO remove the formatting problems for more than one digit
           builder = ""
-          #This shouldn't work
-          #It only works because ruby is dumb
+          max_left = @left.get_data.map { |item| item.to_s.length}.max
           for i in 0..[@left.height,@right.height].max do
-            builder = @left.at(i).to_s + " " + @right.at(i).to_s + "\n" + builder
+            builder = @left.at(i).to_s.ljust(max_left+1) + @right.at(i).to_s + "\n" + builder
+          end
+          if @active_stack == @left then
+            builder += "^\n"
+          else
+            builder += " "*(max_left+1) + "^"
           end
           puts builder+"\n"
       end
