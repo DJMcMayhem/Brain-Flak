@@ -67,6 +67,8 @@ class BrainFlakInterpreter
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dl)
           when "#dr"
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dr)
+          when "#df"
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:df)
         end
       end
     end
@@ -82,6 +84,15 @@ class BrainFlakInterpreter
           puts @active_stack.inspect_array
         when :dl then puts @left.inspect_array
         when :dr then puts @right.inspect_array
+	when :df then
+          #TODO remove the formatting problems for more than one digit
+          builder = ""
+          #This shouldn't work
+          #It only works because ruby is dumb
+          for i in 0..[@left.height,@right.height].max do
+            builder = @left.at(i).to_s + " " + @right.at(i).to_s + "\n" + builder
+          end
+          puts builder+"\n"
       end
     end
   end

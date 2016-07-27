@@ -37,6 +37,10 @@ class Stack
   def height
     return @data.length
   end
+
+  def at(index)
+    return @data.at(index)
+  end
 end
 
 def is_opening_bracket?(b)
