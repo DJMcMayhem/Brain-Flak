@@ -51,6 +51,7 @@ end
 
 source_file = File.open(source_path, 'r')
 source = source_file.read
+source = source.gsub "\s", ""
 source_length = source.length
 
 interpreter = BrainFlakInterpreter.new(source, numbers, debug)
