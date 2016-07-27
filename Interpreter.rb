@@ -43,6 +43,7 @@ class BrainFlakInterpreter
     # Hash.new([]) does not work since modifications change that original array
     @debug_flags = Hash.new{|h,k| h[k] = []}
     @last_op = :none
+    @cycles = 0
     args.each do|a|
       if a =~ /\d+/
         @active_stack.push(a.to_i)
@@ -69,6 +70,8 @@ class BrainFlakInterpreter
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dr)
           when "#df"
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:df)
+          when "#cy"
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:cy)
         end
       end
     end
@@ -96,11 +99,13 @@ class BrainFlakInterpreter
             builder += " "*(max_left+1) + "^"
           end
           puts builder+"\n"
+       when :cy then puts @cycles
       end
     end
   end
 
   def step()
+    @cycles += 1
     if @running == false then
       return false
     end
