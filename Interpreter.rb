@@ -135,7 +135,7 @@ class BrainFlakInterpreter
             end
         end
         @current_value += data[1]
-      else raise BrainFlakError.new("Invalid character '%s.'" % current_symbol, @index + 1)
+      else raise BrainFlakError.new("Invalid character '%s'." % current_symbol, @index + 1)
       end
       @index += 1
     end
