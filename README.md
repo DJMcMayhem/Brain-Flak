@@ -2,7 +2,7 @@
 
 Brain-Flak is an "Turing-tarpit", e.g. a language which can, *in theory* compute anything, but in reality is very inconvenient and painful to use. It was heavily inspired by [Brainf**k](https://esolangs.org/wiki/Brainfuck), the original turing-tarpit.
 
-To get started with Brain-Flak, download the project from here, and run `ruby brain-flak.rb inputs`. Additionally, you can [try it online](http://brain-flak.tryitonline.net/)! (Online intrepreter provided thanks to [@DennisMitchell](https://github.com/DennisMitchell))
+To get started with Brain-Flak, download the project from here, and run `ruby brain_flak.rb inputs`. Additionally, you can [try it online](http://brain-flak.tryitonline.net/)! (Online intrepreter provided thanks to [@DennisMitchell](https://github.com/DennisMitchell))
 
 #Tutorial
 
@@ -52,34 +52,38 @@ That's it. That's the whole language.
 
 Here are some full programs that do interesting things.
 
-Adding two numbers:
+### Adding two numbers:
 
     ({}{})
 
-Subtracting two numbers:
+### Subtracting two numbers:
 
     ([{}]{})
 
-Multiplying two numbers (Positive only):
+### Multiplying two numbers (Positive only):
 
     ({}<>)<>({<({}[()])><>({})<>}{})<>{}<>
 
-Multiplying two numbers (Any):
+### Multiplying two numbers (Any):
 
     ([({})])<>((<(())>))<>{({}<({}()<(([{}])<>)>)<>>)<>({}<>)}{}{}<>{}{}{({}<>{})<>{}}{(<><>)}{}{}<>
 
-Integer divide two numbers (Positive only):
+### Integer divide two numbers (Positive only):
 
-    (({}(<>)))<>{({}[()])<>(({}[()])){{}(<({}[({}<({}[()])>)])>)}{}({}({}<({}())>))<>}{}<>{}{}
+    (<({}(<>))>)<>{({}[()])<>(({}()[({}<({}())>)])){{}(<({}({}<({}[()])>))>)}{}<>}{}<>{}{}({}<>)
 
-Integer divide two numbers (Any):
+### Integer divide two numbers (Any):
 
     ({}<(({})<>)><>)<>(((({}<>)))){{}{}(<(())>)}{}(<>)<>{{}({}()<({}[()])>)<>({}())<>({}<(({})<>)><>)<>({}<>)({}<(({})<>)><>)<>(({}<>)){{}{}(<(())>)}{}({}<(({})){{}{}(<(())>)}{}>{}[()])}{}{}{}(<>{}<>)({}<(({})<>)><>)<>(((({}<>)))){{}{}(<(())>)}{}(<>)<>{{}({}()<({}[()])>)<>({}())<>({}<(({})<>)><>)<>({}<>)({}<(({})<>)><>)<>(({}<>)){{}{}(<(())>)}{}({}<(({})){{}{}(<(())>)}{}>{}[()])}{}{}{}(<>{}<>)({}<({}<(({})){(()){{}({}[()]<({}())>)(({}<(({}))>))({}<({}<({}<>)<>>)<>({}<>)>)({}<(({})){(<{}{}(())>)}>{})(({})){{}{}(<(())>)}({}{}{}[()])}({}<{}(({})){{}{}(<(())>)}{}>)}{}({}<(({})){(()){{}({}[()]<({}())>)(({}<(({}))>))({}<({}<({}<>)<>>)<>({}<>)>)({}<(({})){(<{}{}(())>)}>{})(({})){{}{}(<(())>)}({}{}{}[()])}({}<{}(({})){{}{}(<(())>)}{}>)}{}>)(({}{}[()])){{}{}(<(())>)}{}({}<(())>){{}{}((()[()]))}{}>)>)({}<({}<>)<>>)<>(({}<>)){{}({}<({}<>)<>>)<>(({}<><({}<>)><>)<<>({}<>)>[()]){({}[()]<({}[()])>)}{}((({}))){{}{}(<(())>)}{}(<>)<>{{}({}<(({})<>)<>>)<>({}<({}())><>){({}[()]<({}[()])>)}{}((({}))){(()){{}({}[()]<({}())>)(({}<(({}))>))({}<({}<({}<>)<>>)<>({}<>)>)({}<(({})){(<{}{}(())>)}>{})(({})){{}{}(<(())>)}({}{}{}[()])}({}<{}(({})){{}{}(<(())>)}{}>)}{}}{}{}{}(<<>({}(<>))>)}{}({}<{}({}<>)><>)<>({}<>){{}({}(()[()])){({}[()]<({}[()])>)}}{}
 
-Modulo two numbers (Positive only):
+### Modulo two numbers (Positive only):
 
-    (({}<>))<>{({}[()])<>(({}[()])){{}(<({}[({})])>)}{}({}({}))<>}{}<>([{}]{})
+    (<({}<>)>)<>{({}[()])<>(({}()[({})])){{}(<({}({}))>)}{}<>}{}<>({}<{}><>)
 
-Print the first *N* Fibonacci numbers:
+### Print the first *N* Fibonacci numbers:
 
     <>((()))<>{({}[()])<>({}<>)<>(({})<>({}<>))<>}<>{}{}
+
+### Bubble Sort:
+
+    ([]){({}[()]<(([])<{({}[()]<([([({}<(({})<>)<>>)<><({}<>)>]{}<(())>)](<>)){({}())<>}{}({}<><{}{}>){{}<>(<({}<({}<>)<>>)<>({}<>)>)}{}({}<>)<>>)}{}<>{}>[()]){({}[()]<({}<>)<>>)}{}<>>)}{}

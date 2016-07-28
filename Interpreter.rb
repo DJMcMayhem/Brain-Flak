@@ -32,7 +32,7 @@ class BrainFlakInterpreter
 
   def initialize(source, args, debug)
     # Strips the source of any characters that aren't brackets or part of debug flags
-    @source = source.gsub(/(?:(?<=[()\[\]{}<>])|\s|^)[^#()\[\]{}<>]+/, "")
+    @source = source.gsub(/(?:(?<=[()\[\]{}<>])|\s|^)[^#()\[\]{}<>]*/, "")
     @left = Stack.new('Left')
     @right = Stack.new('Right')
     @main_stack = []
@@ -160,6 +160,10 @@ class BrainFlakInterpreter
     end
     if @index >= @source.length then
       @running = false
+      if @last_op == :nilad then
+        do_debug_flag(@index-1)
+      end
+      do_debug_flag(@index)
     end
   end
 
