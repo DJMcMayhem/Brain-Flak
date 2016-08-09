@@ -40,11 +40,15 @@ class Stack
 end
 
 def is_opening_bracket?(b)
-  return '([{<'.include? b
+  if b != nil then
+    return '([{<'.include? b
+  end
 end
 
 def is_closing_bracket?(b)
-  return ')]}>'.include? b
+  if b != nil then
+    return ')]}>'.include? b
+  end
 end
 
 def brackets_match?(b1, b2)
