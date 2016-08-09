@@ -89,7 +89,11 @@ class BrainFlakInterpreter
         when :dr then puts @right.inspect_array
 	when :df then
           builder = ""
-          max_left = @left.get_data.map { |item| item.to_s.length}.max
+          if @left.height > 0 then
+            max_left = @left.get_data.map { |item| item.to_s.length}.max
+          else
+            max_left = 1
+          end
           for i in 0..[@left.height,@right.height].max do
             builder = @left.at(i).to_s.ljust(max_left+1) + @right.at(i).to_s + "\n" + builder
           end
