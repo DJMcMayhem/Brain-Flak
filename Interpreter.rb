@@ -28,7 +28,8 @@ end
 
 class BrainFlakInterpreter
 
-  attr_reader :active_stack, :running, :left, :right
+  attr_accessor :active_stack
+  attr_reader :running, :left, :right
 
   def initialize(source, left_in, right_in, debug)
     # Strips the source of any characters that aren't brackets or part of debug flags
@@ -51,6 +52,10 @@ class BrainFlakInterpreter
       @right.push(a)
     end
     remove_debug_flags(debug)
+  end
+
+  def inactive_stack
+    return @active_stack == @left ? @right : @left
   end
 
   def remove_debug_flags(debug)
@@ -88,7 +93,7 @@ class BrainFlakInterpreter
           puts @active_stack.inspect_array
         when :dl then puts @left.inspect_array
         when :dr then puts @right.inspect_array
-	when :df then
+        when :df then
           builder = ""
           if @left.height > 0 then
             max_left = @left.get_data.map { |item| item.to_s.length}.max
@@ -108,12 +113,14 @@ class BrainFlakInterpreter
        when :ij then
          injection = $stdin.read
          puts
-         sub_interpreter = BrainFlakInterpreter.new(injection, @left.get_data(), @right.get_data(), true)
+         sub_interpreter = BrainFlakInterpreter.new(injection, @left.get_data, @right.get_data, true)
+         sub_interpreter.active_stack = @active_stack == @left ? sub_interpreter.left : sub_interpreter.right
          while sub_interpreter.running do
            sub_interpreter.step
          end
          @left.set_data(sub_interpreter.left.get_data)
          @right.set_data(sub_interpreter.right.get_data)
+         @active_stack = sub_interpreter.active_stack == sub_interpreter.left ? @left : @right
       end
     end
   end
