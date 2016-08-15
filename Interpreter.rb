@@ -28,7 +28,7 @@ end
 
 class BrainFlakInterpreter
 
-  attr_accessor :active_stack
+  attr_accessor :active_stack, :current_value
   attr_reader :running, :left, :right
 
   def initialize(source, left_in, right_in, debug)
@@ -115,12 +115,14 @@ class BrainFlakInterpreter
          puts
          sub_interpreter = BrainFlakInterpreter.new(injection, @left.get_data, @right.get_data, true)
          sub_interpreter.active_stack = @active_stack == @left ? sub_interpreter.left : sub_interpreter.right
+		 sub_interpreter.current_value = @current_value
          while sub_interpreter.running do
            sub_interpreter.step
          end
          @left.set_data(sub_interpreter.left.get_data)
          @right.set_data(sub_interpreter.right.get_data)
          @active_stack = sub_interpreter.active_stack == sub_interpreter.left ? @left : @right
+		 @current_value = sub_interpreter.current_value
       end
     end
   end
