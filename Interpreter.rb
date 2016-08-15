@@ -39,7 +39,6 @@ class BrainFlakInterpreter
     @active_stack = @left
     @index = 0
     @current_value = 0
-    @running = @source.length > 0
     # Hash.new([]) does not work since modifications change that original array
     @debug_flags = Hash.new{|h,k| h[k] = []}
     @last_op = :none
@@ -51,6 +50,7 @@ class BrainFlakInterpreter
       end
     end
     remove_debug_flags(debug)
+    @running = @source.length > 0
   end
 
   def remove_debug_flags(debug)
