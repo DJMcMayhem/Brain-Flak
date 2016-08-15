@@ -28,7 +28,7 @@ end
 
 class BrainFlakInterpreter
 
-  attr_reader :active_stack, :running
+  attr_reader :active_stack, :running, :left, :right
 
   def initialize(source, left_in, right_in, debug)
     # Strips the source of any characters that aren't brackets or part of debug flags
@@ -71,6 +71,8 @@ class BrainFlakInterpreter
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:df)
           when "#cy"
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:cy)
+          when "#ij"
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:ij)
         end
       end
     end
@@ -78,7 +80,7 @@ class BrainFlakInterpreter
 
   def do_debug_flag(index)
     @debug_flags[index].each do |flag|
-      print "#" + flag.to_s + " "
+      print "#%s " % flag.to_s
       case flag
         when :dv then puts @current_value
         when :dc then
@@ -103,6 +105,15 @@ class BrainFlakInterpreter
           end
           puts builder+"\n"
        when :cy then puts @cycles
+       when :ij then
+         injection = $stdin.read
+         puts
+         sub_interpreter = BrainFlakInterpreter.new(injection, @left.get_data(), @right.get_data(), true)
+         while sub_interpreter.running do
+           sub_interpreter.step
+         end
+         @left.set_data(sub_interpreter.left.get_data)
+         @right.set_data(sub_interpreter.right.get_data)
       end
     end
   end

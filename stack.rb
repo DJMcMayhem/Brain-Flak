@@ -45,6 +45,10 @@ class Stack
   def get_data
     return @data
   end
+
+  def set_data(data)
+    @data = data
+  end
 end
 
 def is_opening_bracket?(b)
