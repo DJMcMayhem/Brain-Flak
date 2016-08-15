@@ -30,7 +30,7 @@ class BrainFlakInterpreter
 
   attr_reader :active_stack, :running
 
-  def initialize(source, args, debug)
+  def initialize(source, left_in, right_in, debug)
     # Strips the source of any characters that aren't brackets or part of debug flags
     @source = source.gsub(/(?:(?<=[()\[\]{}<>])|\s|^)[^#()\[\]{}<>]*/, "")
     @left = Stack.new('Left')
@@ -44,12 +44,11 @@ class BrainFlakInterpreter
     @debug_flags = Hash.new{|h,k| h[k] = []}
     @last_op = :none
     @cycles = 0
-    args.each do|a|
-      if a =~ /\d+/
-        @active_stack.push(a.to_i)
-      else
-        raise BrainFlakError.new("Invalid integer in input", 0)
-      end
+    left_in.each do|a|
+      @left.push(a)
+    end
+    right_in.each do|a|
+      @right.push(a)
     end
     remove_debug_flags(debug)
   end

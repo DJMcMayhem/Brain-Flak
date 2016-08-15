@@ -53,9 +53,13 @@ source_file = File.open(source_path, 'r')
 source = source_file.read
 source_length = source.length
 
-interpreter = BrainFlakInterpreter.new(source, numbers, debug)
-
 begin
+  numbers.each do |a|
+    raise BrainFlakError.new("Invalid integer in input: \"%s\""%[a], 0) if !(a =~ /^-?\d+$/)
+  end
+  numbers.map! { |n| n.to_i }
+  interpreter = BrainFlakInterpreter.new(source, numbers, [], debug)
+
   while interpreter.running do
     interpreter.step
   end
