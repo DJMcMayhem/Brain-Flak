@@ -28,8 +28,8 @@ end
 
 class BrainFlakInterpreter
 
-  attr_accessor :active_stack
-  attr_reader :running, :left, :right, :source, :index
+  attr_accessor :active_stack, :current_value
+  attr_reader :running, :left, :right
 
   def initialize(source, left_in, right_in, debug)
     # Strips the source of any characters that aren't brackets or part of debug flags
@@ -115,14 +115,14 @@ class BrainFlakInterpreter
          puts
          sub_interpreter = BrainFlakInterpreter.new(injection, @left.get_data, @right.get_data, true)
          sub_interpreter.active_stack = @active_stack == @left ? sub_interpreter.left : sub_interpreter.right
-		 sub_interpreter.current_value = @current_value
+         sub_interpreter.current_value = @current_value
          while sub_interpreter.running do
            sub_interpreter.step
          end
          @left.set_data(sub_interpreter.left.get_data)
          @right.set_data(sub_interpreter.right.get_data)
          @active_stack = sub_interpreter.active_stack == sub_interpreter.left ? @left : @right
-		 @current_value = sub_interpreter.current_value
+         @current_value = sub_interpreter.current_value
       end
     end
   end
@@ -195,5 +195,20 @@ class BrainFlakInterpreter
       unmatched_brak = @main_stack[0]
       raise BrainFlakError.new("Unclosed '%s' character." % unmatched_brak[0], unmatched_brak[2])
     end
+  end
+
+  def debug_info
+    return "%1$p\n"\
+           "Cycles: %2$d\n"\
+           "Current value: %3$d\n"\
+           "%8$s Left stack: %4$s\n"\
+           "%9$sRight stack: %5$s\n"\
+           "Execution stack: %6$p\n"\
+           "Debug flags: %7$p"\
+             % [self, @cycles, @current_value, @left.inspect_array, @right.inspect_array, @main_stack, @debug_flags, *@active_stack == @left ? ["* ", "  "] : ["  ", "* "]]
+  end
+
+  def inspect
+    return "%s\n%s" % [@source, "^".rjust(@index + 1)]
   end
 end
