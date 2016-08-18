@@ -68,4 +68,8 @@ begin
   interpreter.active_stack.print
 rescue BrainFlakError => e
   STDERR.puts e.message
+rescue Interrupt
+  STDERR.puts "\nKeyboard Interrupt"
+  STDERR.puts interpreter.source
+  STDERR.puts "^".rjust(interpreter.index+1)
 end

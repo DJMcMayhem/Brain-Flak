@@ -28,8 +28,8 @@ end
 
 class BrainFlakInterpreter
 
-  attr_accessor :active_stack, :current_value
-  attr_reader :running, :left, :right
+  attr_accessor :active_stack
+  attr_reader :running, :left, :right, :source, :index
 
   def initialize(source, left_in, right_in, debug)
     # Strips the source of any characters that aren't brackets or part of debug flags
