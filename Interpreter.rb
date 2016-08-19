@@ -198,14 +198,21 @@ class BrainFlakInterpreter
   end
 
   def debug_info
-    return "%1$p\n"\
-           "Cycles: %2$d\n"\
-           "Current value: %3$d\n"\
-           "%8$s Left stack: %4$s\n"\
-           "%9$sRight stack: %5$s\n"\
-           "Execution stack: %6$p\n"\
-           "Debug flags: %7$p"\
-             % [self, @cycles, @current_value, @left.inspect_array, @right.inspect_array, @main_stack, @debug_flags, *@active_stack == @left ? ["* ", "  "] : ["  ", "* "]]
+    source = String.new(str=@source)
+    offset = 0
+    @debug_flags.each_pair do |k,v|
+      v.each do |sym|
+        source.insert(k + offset, "#%s" % sym.id2name);
+        offset += sym.id2name.length + 1
+      end
+    end
+    return "%1$s\n%2$*3$s^\n"\
+           "Cycles: %4$d\n"\
+           "Current value: %5$d\n"\
+           "%9$s Left stack: %6$s\n"\
+           "%10$sRight stack: %7$s\n"\
+           "Execution stack: %8$p\n"\
+             % [source, "", @index + offset, @cycles, @current_value, @left.inspect_array, @right.inspect_array, @main_stack, *@active_stack == @left ? ["> ", "  "] : ["  ", "> "]]
   end
 
   def inspect
