@@ -1,4 +1,5 @@
 require './stack.rb'
+require 'io/console'
 
 class BrainFlakError < StandardError
 
@@ -216,6 +217,19 @@ class BrainFlakInterpreter
   end
 
   def inspect
-    return "%s\n%s" % [@source, "^".rjust(@index + 1)]
+    winwidth = IO.console.winsize[1]
+    if @source.length <= winwidth then
+      return "%s\n%s" % [@source, "^".rjust(@index + 1)]
+    else
+      if @index < winwidth/2 then
+        return "%s...\n%s" % [@source[0..winwidth-4],"^".rjust(@index + 1)]
+      else
+        if @source.length - @index < winwidth/2 then
+          return "...%s\n%s" % [@source[-(winwidth-3)..-1],"^".rjust(winwidth-(@source.length-@index))]
+        else
+          return "...%s..\n%s" % [@source[3+@index-winwidth/2..winwidth/2+@index-3],"^".rjust(winwidth/2+1)]
+        end
+      end
+    end
   end
 end
