@@ -217,19 +217,15 @@ class BrainFlakInterpreter
   end
 
   def inspect
-    winwidth = IO.console.winsize[1]
-    if @source.length <= winwidth then
+    winWidth = IO.console.winsize[1]
+    if @source.length <= winWidth then
       return "%s\n%s" % [@source, "^".rjust(@index + 1)]
+    elsif @index < winWidth/2 then
+      return "%s...\n%s" % [@source[0..winWidth-4],"^".rjust(@index + 1)]
+    elsif @source.length - @index < winWidth/2 then
+      return "...%s\n%s" % [@source[-(winWidth-3)..-1],"^".rjust(winWidth-(@source.length-@index))]
     else
-      if @index < winwidth/2 then
-        return "%s...\n%s" % [@source[0..winwidth-4],"^".rjust(@index + 1)]
-      else
-        if @source.length - @index < winwidth/2 then
-          return "...%s\n%s" % [@source[-(winwidth-3)..-1],"^".rjust(winwidth-(@source.length-@index))]
-        else
-          return "...%s..\n%s" % [@source[3+@index-winwidth/2..winwidth/2+@index-3],"^".rjust(winwidth/2+1)]
-        end
-      end
+      return "...%s..\n%s" % [@source[3+@index-winWidth/2..winWidth/2+@index-3],"^".rjust(winWidth/2+1)]
     end
   end
 end
