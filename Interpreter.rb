@@ -225,7 +225,7 @@ class BrainFlakInterpreter
     elsif @source.length - @index < winWidth/2 then
       return "...%s\n%s" % [@source[-(winWidth-3)..-1],"^".rjust(winWidth-(@source.length-@index))]
     else
-      return "...%s..\n%s" % [@source[3+@index-winWidth/2..winWidth/2+@index-3],"^".rjust(winWidth/2+1)]
+      return "...%s...\n%s" % [@source[3+@index-winWidth/2..winWidth/2+@index-4],"^".rjust(winWidth/2+1)]
     end
   end
 end
