@@ -1,5 +1,5 @@
-require './stack.rb'
-require './Interpreter.rb'
+require_relative './stack.rb'
+require_relative './Interpreter.rb'
 
 require 'optparse'
 

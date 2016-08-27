@@ -1,4 +1,4 @@
-require './stack.rb'
+require_relative './stack.rb'
 
 class BrainFlakError < StandardError
 
