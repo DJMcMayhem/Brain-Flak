@@ -4,6 +4,7 @@ require './Interpreter.rb'
 require 'optparse'
 
 debug = false
+ascii_mode = false
 arg_path = ""
 
 parser = OptionParser.new do |opts|
@@ -19,6 +20,10 @@ parser = OptionParser.new do |opts|
 
   opts.on("-f", "--file=FILE", "Reads input for the brain-flak program from FILE, rather than from the command line.") do |file|
     arg_path = file
+  end
+
+  opts.on("-a", "--ascii", "Take input and output in ASCII code points, rather than in decimal") do 
+    ascii_mode = true
   end
 end
 
@@ -39,8 +44,17 @@ end
 source_path = ARGV[0]
 if arg_path != "" then
   input_file = File.open(arg_path, 'r')
-  numbers = input_file.read.gsub(/\s+/m, ' ').strip.split(" ").reverse
+  if !ascii_mode
+    numbers = input_file.read.gsub(/\s+/m, ' ').strip.split(" ").reverse
+  else
+    numbers = input_file.read.split("").map(&:ord)
+  end
+
 else
+  if ascii_mode and ARGV.length > 1
+    puts "ASCII mode (-a) and command line input are incompatible.\nTry giving input from a file.\n"
+    exit
+  end
   numbers = ARGV[1..-1].reverse
 end
 
@@ -52,14 +66,14 @@ source_file = File.open(source_path, 'r')
 source = source_file.read
 source_length = source.length
 
-interpreter = BrainFlakInterpreter.new(source, numbers, debug)
+interpreter = BrainFlakInterpreter.new(source, numbers, debug, interpreter)
 
 begin
   while interpreter.running do
     interpreter.step
   end
 
-  interpreter.active_stack.print
+  interpreter.active_stack.print(ascii_mode)
 rescue BrainFlakError => e
   puts e.message
 end

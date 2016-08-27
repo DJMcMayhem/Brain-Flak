@@ -4,6 +4,8 @@ class Stack
     @data = []
   end
 
+  attr_reader :data
+
   def pop
     if @data.length != 0 then
       return @data.pop
@@ -20,9 +22,9 @@ class Stack
     return @data.last || 0
   end
 
-  def print
+  def print(ascii_mode)
     while @data.length > 0 do
-        puts pop
+        puts ascii_mode ? pop.chr : pop
     end
   end
 
