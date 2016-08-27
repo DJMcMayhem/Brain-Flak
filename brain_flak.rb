@@ -17,21 +17,20 @@ parser = OptionParser.new do |opts|
     debug = true
   end
 
-  opts.on("-f", "--argument-file=FILE", "Reads arguments for the brain-flak program from FILE and ignores those provided as command line arguments") do |file|
+  opts.on("-f", "--file=FILE", "Reads input for the brain-flak program from FILE, rather than from the command line.") do |file|
     arg_path = file
   end
 end
 
 begin
-  parser.order!
+  parser.parse!
 rescue OptionParser::ParseError => e
   puts e
   puts "\n"
   puts parser
   exit
 end
-# parser.order! removes all the option flags from ARGV
-# so all is left is the brain-flak file and the arguments
+
 if ARGV.length < 1 then
   puts parser
   exit
@@ -53,15 +52,15 @@ source_file = File.open(source_path, 'r')
 source = source_file.read
 source_length = source.length
 
-interpreter = BrainFlakInterpreter.new(source, numbers, debug)
+interpreter = BrainFlakInterpreter.new(source, numbers)
 
 begin
   while interpreter.running do
     interpreter.step
   end
 
-  interpreter.finish
   interpreter.active_stack.print
 rescue BrainFlakError => e
-  STDERR.puts e.message
+  puts e.message
 end
+
