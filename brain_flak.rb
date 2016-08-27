@@ -8,10 +8,10 @@ arg_path = ""
 
 parser = OptionParser.new do |opts|
   # This needs updating
-  opts.banner = "Welcome to Brain-Flak!"\
-                "\nUsage:"\
-                "brain_flak source_file"\
-                "brain_flak source_file args\n"
+  opts.banner = "Welcome to Brain-Flak!\n\n"\
+                "Usage:\n"\
+                "\tbrain_flak source_file\n"\
+                "\tbrain_flak source_file args\n\n"
 
   opts.on("-d", "--debug", "Enables parsing of debug commands") do
     debug = true
