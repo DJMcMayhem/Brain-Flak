@@ -39,9 +39,9 @@ end
 source_path = ARGV[0]
 if arg_path != "" then
   input_file = File.open(arg_path, 'r')
-  numbers = input_file.read.gsub(/\s+/m, ' ').strip.split(" ")
+  numbers = input_file.read.gsub(/\s+/m, ' ').strip.split(" ").reverse
 else
-  numbers = ARGV[1..-1]
+  numbers = ARGV[1..-1].reverse
 end
 
 if debug then
@@ -52,7 +52,7 @@ source_file = File.open(source_path, 'r')
 source = source_file.read
 source_length = source.length
 
-interpreter = BrainFlakInterpreter.new(source, numbers)
+interpreter = BrainFlakInterpreter.new(source, numbers, debug)
 
 begin
   while interpreter.running do
