@@ -45,7 +45,7 @@ source_path = ARGV[0]
 if arg_path != "" then
   input_file = File.open(arg_path, 'r')
   if !ascii_mode
-    numbers = input_file.read.gsub(/\s+/m, ' ').strip.split(" ").reverse
+    numbers = input_file.read.gsub(/\s+/m, ' ').strip.split(" ")
   else
     numbers = input_file.read.split("").map(&:ord)
   end
@@ -66,14 +66,14 @@ source_file = File.open(source_path, 'r')
 source = source_file.read
 source_length = source.length
 
-interpreter = BrainFlakInterpreter.new(source, numbers, debug, interpreter)
+interpreter = BrainFlakInterpreter.new(source, numbers, debug, ascii_mode)
 
 begin
   while interpreter.running do
     interpreter.step
   end
 
-  interpreter.active_stack.print(ascii_mode)
+  interpreter.active_stack.print_stack(ascii_mode)
 rescue BrainFlakError => e
   puts e.message
 end

@@ -43,7 +43,7 @@ class BrainFlakInterpreter
     @debug_flags = Hash.new{|h,k| h[k] = []}
     @last_op = :none
     args.each do|a|
-      if ascii_mode
+      if !ascii_mode
         if a =~ /\d+/
           @active_stack.push(a.to_i)
         else

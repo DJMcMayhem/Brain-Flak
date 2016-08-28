@@ -22,10 +22,11 @@ class Stack
     return @data.last || 0
   end
 
-  def print(ascii_mode)
-    while @data.length > 0 do
-        puts ascii_mode ? pop.chr : pop
+  def print_stack(ascii_mode)
+    @data.each do |value|
+      print ascii_mode ? value.chr : value.to_s + "\n"
     end
+    STDOUT.flush
   end
 
   def talk
