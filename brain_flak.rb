@@ -75,6 +75,6 @@ begin
 
   interpreter.active_stack.print_stack(ascii_mode)
 rescue BrainFlakError => e
-  puts e.message
+  SRDERR.puts e.message
 end
 
