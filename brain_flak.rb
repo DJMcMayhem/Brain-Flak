@@ -59,7 +59,7 @@ else
 end
 
 if debug then
-  puts "Debug mode... ENGAGED!"
+  STDERR.puts "Debug mode... ENGAGED!"
 end
 
 source_file = File.open(source_path, 'r')
