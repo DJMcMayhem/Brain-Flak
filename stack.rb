@@ -4,6 +4,8 @@ class Stack
     @data = []
   end
 
+  attr_reader :data
+
   def pop
     if @data.length != 0 then
       return @data.pop
@@ -20,10 +22,11 @@ class Stack
     return @data.last || 0
   end
 
-  def print
-    while @data.length > 0 do
-        puts pop
+  def print_stack(ascii_mode)
+    @data.each do |value|
+      print ascii_mode ? value.chr : value.to_s + "\n"
     end
+    STDOUT.flush
   end
 
   def talk
@@ -52,11 +55,15 @@ class Stack
 end
 
 def is_opening_bracket?(b)
-  return '([{<'.include? b
+  if b != nil then
+    return '([{<'.include? b
+  end
 end
 
 def is_closing_bracket?(b)
-  return ')]}>'.include? b
+  if b != nil then
+    return ')]}>'.include? b
+  end
 end
 
 def brackets_match?(b1, b2)

@@ -1,37 +1,41 @@
-require './stack.rb'
-require './Interpreter.rb'
+require_relative './stack.rb'
+require_relative './Interpreter.rb'
 
 require 'optparse'
 
 debug = false
+ascii_mode = false
 arg_path = ""
 
 parser = OptionParser.new do |opts|
   # This needs updating
-  opts.banner = "Welcome to Brain-Flak!"\
-                "\nUsage:"\
-                "brain_flak source_file"\
-                "brain_flak source_file args\n"
+  opts.banner = "Welcome to Brain-Flak!\n\n"\
+                "Usage:\n"\
+                "\tbrain_flak source_file\n"\
+                "\tbrain_flak source_file args\n\n"
 
   opts.on("-d", "--debug", "Enables parsing of debug commands") do
     debug = true
   end
 
-  opts.on("-f", "--argument-file=FILE", "Reads arguments for the brain-flak program from FILE and ignores those provided as command line arguments") do |file|
+  opts.on("-f", "--file=FILE", "Reads input for the brain-flak program from FILE, rather than from the command line.") do |file|
     arg_path = file
+  end
+
+  opts.on("-a", "--ascii", "Take input and output in ASCII code points, rather than in decimal") do 
+    ascii_mode = true
   end
 end
 
 begin
-  parser.order!
+  parser.parse!
 rescue OptionParser::ParseError => e
   puts e
   puts "\n"
   puts parser
   exit
 end
-# parser.order! removes all the option flags from ARGV
-# so all is left is the brain-flak file and the arguments
+
 if ARGV.length < 1 then
   puts parser
   exit
@@ -40,9 +44,18 @@ end
 source_path = ARGV[0]
 if arg_path != "" then
   input_file = File.open(arg_path, 'r')
-  numbers = input_file.read.gsub(/\s+/m, ' ').strip.split(" ")
+  if !ascii_mode
+    numbers = input_file.read.gsub(/\s+/m, ' ').strip.split(" ")
+  else
+    numbers = input_file.read.split("").map(&:ord)
+  end
+
 else
-  numbers = ARGV[1..-1]
+  if ascii_mode and ARGV.length > 1
+    puts "ASCII mode (-a) and command line input are incompatible.\nTry giving input from a file.\n"
+    exit
+  end
+  numbers = ARGV[1..-1].reverse
 end
 
 if debug then
@@ -54,18 +67,21 @@ source = source_file.read
 source_length = source.length
 
 begin
-  numbers.each do |a|
-    raise BrainFlakError.new("Invalid integer in input: \"%s\""%[a], 0) if !(a =~ /^-?\d+$/)
+  if !ascii_mode
+    numbers.each do |a|
+      raise BrainFlakError.new("Invalid integer in input: \"%s\""%[a], 0) if !(a =~ /^-?\d+$/)
+    end
+    numbers.map! { |n| n.to_i }
+  else
+    numbers.map! { |c| c.ord }
   end
-  numbers.map! { |n| n.to_i }
   interpreter = BrainFlakInterpreter.new(source, numbers, [], debug)
 
   while interpreter.running do
     interpreter.step
   end
 
-  interpreter.finish
-  interpreter.active_stack.print
+  interpreter.active_stack.print_stack(ascii_mode)
 rescue BrainFlakError => e
   STDERR.puts e.message
 rescue Interrupt
@@ -75,3 +91,4 @@ rescue Interrupt
     STDERR.puts interpreter.debug_info
   end
 end
+

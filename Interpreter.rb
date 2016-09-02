@@ -1,5 +1,5 @@
-require './stack.rb'
 require 'io/console'
+require_relative './stack.rb'
 
 class BrainFlakError < StandardError
 
@@ -41,7 +41,6 @@ class BrainFlakInterpreter
     @active_stack = @left
     @index = 0
     @current_value = 0
-    @running = @source.length > 0
     # Hash.new([]) does not work since modifications change that original array
     @debug_flags = Hash.new{|h,k| h[k] = []}
     @last_op = :none
@@ -53,6 +52,7 @@ class BrainFlakInterpreter
       @right.push(a)
     end
     remove_debug_flags(debug)
+    @running = @source.length > 0
   end
 
   def inactive_stack
@@ -178,7 +178,7 @@ class BrainFlakInterpreter
             end
         end
         @current_value += data[1]
-      else raise BrainFlakError.new("Invalid character '%s.'" % current_symbol, @index + 1)
+      else raise BrainFlakError.new("Invalid character '%s'." % current_symbol, @index + 1)
       end
       @index += 1
     end
