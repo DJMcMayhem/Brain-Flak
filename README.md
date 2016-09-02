@@ -68,6 +68,10 @@ Here are some full programs that do interesting things.
 
     ([({})])<>((<(())>))<>{({}<({}()<(([{}])<>)>)<>>)<>({}<>)}{}{}<>{}{}{({}<>{})<>{}}{(<><>)}{}{}<>
 
+### Square a number (Positive only):
+
+   ({({})({}[()])}{})
+
 ### Integer divide two numbers (Positive only):
 
     (<({}(<>))>)<>{({}[()])<>(({}()[({}<({}())>)])){{}(<({}({}<({}[()])>))>)}{}<>}{}<>{}{}({}<>)

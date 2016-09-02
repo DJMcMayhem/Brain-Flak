@@ -66,15 +66,29 @@ source_file = File.open(source_path, 'r')
 source = source_file.read
 source_length = source.length
 
-interpreter = BrainFlakInterpreter.new(source, numbers, debug, ascii_mode)
-
 begin
+  if !ascii_mode
+    numbers.each do |a|
+      raise BrainFlakError.new("Invalid integer in input: \"%s\""%[a], 0) if !(a =~ /^-?\d+$/)
+    end
+    numbers.map! { |n| n.to_i }
+  else
+    numbers.map! { |c| c.ord }
+  end
+  interpreter = BrainFlakInterpreter.new(source, numbers, [], debug)
+
   while interpreter.running do
     interpreter.step
   end
 
   interpreter.active_stack.print_stack(ascii_mode)
 rescue BrainFlakError => e
-  SRDERR.puts e.message
+  STDERR.puts e.message
+rescue Interrupt
+  STDERR.puts "\nKeyboard Interrupt"
+  STDERR.puts interpreter.inspect
+  if debug then
+    STDERR.puts interpreter.debug_info
+  end
 end
 

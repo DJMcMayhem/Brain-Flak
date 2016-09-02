@@ -1,3 +1,4 @@
+require 'io/console'
 require_relative './stack.rb'
 
 class BrainFlakError < StandardError
@@ -28,9 +29,10 @@ end
 
 class BrainFlakInterpreter
 
-  attr_reader :active_stack, :running
+  attr_accessor :active_stack, :current_value
+  attr_reader :running, :left, :right
 
-  def initialize(source, args, debug, ascii_mode)
+  def initialize(source, left_in, right_in, debug)
     # Strips the source of any characters that aren't brackets or part of debug flags
     @source = source.gsub(/(?:(?<=[()\[\]{}<>])|\s|^)[^#()\[\]{}<>]*/, "")
     @left = Stack.new('Left')
@@ -42,19 +44,19 @@ class BrainFlakInterpreter
     # Hash.new([]) does not work since modifications change that original array
     @debug_flags = Hash.new{|h,k| h[k] = []}
     @last_op = :none
-    args.each do|a|
-      if !ascii_mode
-        if a =~ /\d+/
-          @active_stack.push(a.to_i)
-        else
-          raise BrainFlakError.new("Invalid integer in input", 0)
-        end
-      else
-        @active_stack.push(a.ord)
-      end
+    @cycles = 0
+    left_in.each do|a|
+      @left.push(a)
+    end
+    right_in.each do|a|
+      @right.push(a)
     end
     remove_debug_flags(debug)
     @running = @source.length > 0
+  end
+
+  def inactive_stack
+    return @active_stack == @left ? @right : @left
   end
 
   def remove_debug_flags(debug)
@@ -71,6 +73,12 @@ class BrainFlakInterpreter
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dl)
           when "#dr"
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dr)
+          when "#df"
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:df)
+          when "#cy"
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:cy)
+          when "#ij"
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:ij)
         end
       end
     end
@@ -78,7 +86,7 @@ class BrainFlakInterpreter
 
   def do_debug_flag(index)
     @debug_flags[index].each do |flag|
-      print "#" + flag.to_s + " "
+      print "#%s " % flag.to_s
       case flag
         when :dv then puts @current_value
         when :dc then
@@ -86,11 +94,42 @@ class BrainFlakInterpreter
           puts @active_stack.inspect_array
         when :dl then puts @left.inspect_array
         when :dr then puts @right.inspect_array
+        when :df then
+          builder = ""
+          if @left.height > 0 then
+            max_left = @left.get_data.map { |item| item.to_s.length}.max
+          else
+            max_left = 1
+          end
+          for i in 0..[@left.height,@right.height].max do
+            builder = @left.at(i).to_s.ljust(max_left+1) + @right.at(i).to_s + "\n" + builder
+          end
+          if @active_stack == @left then
+            builder += "^\n"
+          else
+            builder += " "*(max_left+1) + "^"
+          end
+          puts builder+"\n"
+       when :cy then puts @cycles
+       when :ij then
+         injection = $stdin.read
+         puts
+         sub_interpreter = BrainFlakInterpreter.new(injection, @left.get_data, @right.get_data, true)
+         sub_interpreter.active_stack = @active_stack == @left ? sub_interpreter.left : sub_interpreter.right
+         sub_interpreter.current_value = @current_value
+         while sub_interpreter.running do
+           sub_interpreter.step
+         end
+         @left.set_data(sub_interpreter.left.get_data)
+         @right.set_data(sub_interpreter.right.get_data)
+         @active_stack = sub_interpreter.active_stack == sub_interpreter.left ? @left : @right
+         @current_value = sub_interpreter.current_value
       end
     end
   end
 
   def step()
+    @cycles += 1
     if @running == false then
       return false
     end
@@ -156,6 +195,42 @@ class BrainFlakInterpreter
     if @main_stack.length > 0
       unmatched_brak = @main_stack[0]
       raise BrainFlakError.new("Unclosed '%s' character." % unmatched_brak[0], unmatched_brak[2])
+    end
+  end
+
+  def debug_info
+    source = String.new(str=@source)
+    offset = 0
+    return "Cycles: %1$d\n"\
+           "Current value: %2$d\n"\
+           "%6$s Left stack: %3$s\n"\
+           "%7$sRight stack: %4$s\n"\
+           "Execution stack: %5$p\n"\
+             % [@cycles, @current_value, @left.inspect_array, @right.inspect_array, @main_stack, *@active_stack == @left ? ["> ", "  "] : ["  ", "> "]]
+  end
+
+  def inspect
+    source = String.new(str=@source)
+    index = @index
+    offset = 0
+    @debug_flags.each_pair do |k,v|
+      v.each do |sym|
+        source.insert(k + offset, "#%s" % sym.id2name);
+        offset += sym.id2name.length + 1
+        if k <= index then
+		index += sym.id2name.length + 1
+        end
+      end
+    end
+    winWidth = IO.console.winsize[1]
+    if source.length <= winWidth then
+      return "%s\n%s" % [source, "^".rjust(index + 1)]
+    elsif index < winWidth/2 then
+      return "%s...\n%s" % [source[0..winWidth-4],"^".rjust(index + 1)]
+    elsif source.length - index < winWidth/2 then
+      return "...%s\n%s" % [source[-(winWidth-3)..-1],"^".rjust(winWidth-(source.length-index))]
+    else
+      return "...%s...\n%s" % [source[3+index-winWidth/2..winWidth/2+index-4],"^".rjust(winWidth/2+1)]
     end
   end
 end
