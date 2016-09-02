@@ -201,31 +201,36 @@ class BrainFlakInterpreter
   def debug_info
     source = String.new(str=@source)
     offset = 0
+    return "Cycles: %1$d\n"\
+           "Current value: %2$d\n"\
+           "%6$s Left stack: %3$s\n"\
+           "%7$sRight stack: %4$s\n"\
+           "Execution stack: %5$p\n"\
+             % [@cycles, @current_value, @left.inspect_array, @right.inspect_array, @main_stack, *@active_stack == @left ? ["> ", "  "] : ["  ", "> "]]
+  end
+
+  def inspect
+    source = String.new(str=@source)
+    index = @index
+    offset = 0
     @debug_flags.each_pair do |k,v|
       v.each do |sym|
         source.insert(k + offset, "#%s" % sym.id2name);
         offset += sym.id2name.length + 1
+        if k <= index then
+		index += sym.id2name.length + 1
+        end
       end
     end
-    return "%1$s\n%2$*3$s^\n"\
-           "Cycles: %4$d\n"\
-           "Current value: %5$d\n"\
-           "%9$s Left stack: %6$s\n"\
-           "%10$sRight stack: %7$s\n"\
-           "Execution stack: %8$p\n"\
-             % [source, "", @index + offset, @cycles, @current_value, @left.inspect_array, @right.inspect_array, @main_stack, *@active_stack == @left ? ["> ", "  "] : ["  ", "> "]]
-  end
-
-  def inspect
     winWidth = IO.console.winsize[1]
-    if @source.length <= winWidth then
-      return "%s\n%s" % [@source, "^".rjust(@index + 1)]
-    elsif @index < winWidth/2 then
-      return "%s...\n%s" % [@source[0..winWidth-4],"^".rjust(@index + 1)]
-    elsif @source.length - @index < winWidth/2 then
-      return "...%s\n%s" % [@source[-(winWidth-3)..-1],"^".rjust(winWidth-(@source.length-@index))]
+    if source.length <= winWidth then
+      return "%s\n%s" % [source, "^".rjust(index + 1)]
+    elsif index < winWidth/2 then
+      return "%s...\n%s" % [source[0..winWidth-4],"^".rjust(index + 1)]
+    elsif source.length - index < winWidth/2 then
+      return "...%s\n%s" % [source[-(winWidth-3)..-1],"^".rjust(winWidth-(source.length-index))]
     else
-      return "...%s...\n%s" % [@source[3+@index-winWidth/2..winWidth/2+@index-4],"^".rjust(winWidth/2+1)]
+      return "...%s...\n%s" % [source[3+index-winWidth/2..winWidth/2+index-4],"^".rjust(winWidth/2+1)]
     end
   end
 end

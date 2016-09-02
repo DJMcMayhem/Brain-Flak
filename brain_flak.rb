@@ -70,9 +70,8 @@ rescue BrainFlakError => e
   STDERR.puts e.message
 rescue Interrupt
   STDERR.puts "\nKeyboard Interrupt"
+  STDERR.puts interpreter.inspect
   if debug then
     STDERR.puts interpreter.debug_info
-  else
-    STDERR.puts interpreter.inspect
   end
 end
