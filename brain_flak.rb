@@ -28,7 +28,7 @@ parser = OptionParser.new do |opts|
 end
 
 begin
-  parser.parse!
+  parser.order!
 rescue OptionParser::ParseError => e
   puts e
   puts "\n"
