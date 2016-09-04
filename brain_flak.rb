@@ -77,8 +77,7 @@ begin
   end
   interpreter = BrainFlakInterpreter.new(source, numbers, [], debug)
 
-  while interpreter.running do
-    interpreter.step
+  while interpreter.step
   end
 
   interpreter.active_stack.print_stack(ascii_mode)

@@ -53,6 +53,7 @@ class BrainFlakInterpreter
     end
     remove_debug_flags(debug)
     @running = @source.length > 0
+    @run_debug = !@running && @debug_flags.size > 0
   end
 
   def inactive_stack
@@ -129,16 +130,19 @@ class BrainFlakInterpreter
   end
 
   def step()
-    @cycles += 1
-    if @running == false then
+    if @run_debug or @running then
+      if @last_op == :nilad then
+        do_debug_flag(@index-1)
+      end
+      if @last_op != :close_curly then
+        do_debug_flag(@index)
+      end
+      @run_debug = false
+    end
+    if !@running then
       return false
     end
-    if @last_op == :nilad then
-      do_debug_flag(@index-1)
-    end
-    if @last_op != :close_curly then
-      do_debug_flag(@index)
-    end
+    @cycles += 1
     current_symbol = @source[@index..@index+1] or @source[@index]
     if ['()', '[]', '{}', '<>'].include? current_symbol
       case current_symbol
@@ -189,6 +193,7 @@ class BrainFlakInterpreter
       end
       do_debug_flag(@index)
     end
+    return true
   end
 
   def finish
@@ -218,7 +223,7 @@ class BrainFlakInterpreter
         source.insert(k + offset, "#%s" % sym.id2name);
         offset += sym.id2name.length + 1
         if k <= index then
-		index += sym.id2name.length + 1
+          index += sym.id2name.length + 1
         end
       end
     end
