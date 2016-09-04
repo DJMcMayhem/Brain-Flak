@@ -4,7 +4,8 @@ require_relative './Interpreter.rb'
 require 'optparse'
 
 debug = false
-ascii_mode = false
+ascii_in = false
+ascii_out = false
 arg_path = ""
 
 parser = OptionParser.new do |opts|
@@ -22,8 +23,19 @@ parser = OptionParser.new do |opts|
     arg_path = file
   end
 
-  opts.on("-a", "--ascii", "Take input and output in ASCII code points, rather than in decimal") do 
-    ascii_mode = true
+  opts.on("-a", "--ascii-in", "Take input in ASCII code points and output in decimal. This overrides previous -A and -c flags.") do 
+    ascii_in = true
+    ascii_out = false
+  end
+
+  opts.on("-A", "--ascii-out", "Take input in decimal and output in ASCII code points. This overrides previous -a and -c flags.") do 
+    ascii_in = false
+    ascii_out = true
+  end
+
+  opts.on("-c", "--ascii", "Take input and output in ASCII code points, rather than in decimal. This overrides previous -a and -A flags.") do 
+    ascii_in = true
+    ascii_out = true
   end
 end
 
@@ -44,14 +56,14 @@ end
 source_path = ARGV[0]
 if arg_path != "" then
   input_file = File.open(arg_path, 'r')
-  if !ascii_mode
+  if !ascii_in
     numbers = input_file.read.gsub(/\s+/m, ' ').strip.split(" ")
   else
     numbers = input_file.read.split("").map(&:ord)
   end
 
 else
-  if ascii_mode and ARGV.length > 1
+  if ascii_in and ARGV.length > 1
     puts "ASCII mode (-a) and command line input are incompatible.\nTry giving input from a file.\n"
     exit
   end
@@ -67,7 +79,7 @@ source = source_file.read
 source_length = source.length
 
 begin
-  if !ascii_mode
+  if !ascii_in
     numbers.each do |a|
       raise BrainFlakError.new("Invalid integer in input: \"%s\""%[a], 0) if !(a =~ /^-?\d+$/)
     end
@@ -80,7 +92,7 @@ begin
   while interpreter.step
   end
 
-  interpreter.active_stack.print_stack(ascii_mode)
+  interpreter.active_stack.print_stack(ascii_out)
 rescue BrainFlakError => e
   STDERR.puts e.message
 rescue Interrupt
