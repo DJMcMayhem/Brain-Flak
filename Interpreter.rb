@@ -118,8 +118,7 @@ class BrainFlakInterpreter
          sub_interpreter = BrainFlakInterpreter.new(injection, @left.get_data, @right.get_data, true)
          sub_interpreter.active_stack = @active_stack == @left ? sub_interpreter.left : sub_interpreter.right
          sub_interpreter.current_value = @current_value
-         while sub_interpreter.running do
-           sub_interpreter.step
+         while sub_interpreter.step
          end
          @left.set_data(sub_interpreter.left.get_data)
          @right.set_data(sub_interpreter.right.get_data)
