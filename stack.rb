@@ -26,6 +26,7 @@ class Stack
     @data.each do |value|
       print ascii_mode ? value.chr : value.to_s + "\n"
     end
+	print "\n" if ascii_mode
     STDOUT.flush
   end
 
