@@ -101,5 +101,14 @@ rescue Interrupt
   if debug then
     STDERR.puts interpreter.debug_info
   end
+rescue RuntimeError => e
+  if e.to_s == "Second Interrupt"
+    STDERR.puts interpreter.inspect
+    if debug then
+      STDERR.puts interpreter.debug_info
+    end
+  else
+    raise e   
+  end
 end
 

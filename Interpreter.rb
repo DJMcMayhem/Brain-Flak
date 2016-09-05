@@ -118,7 +118,18 @@ class BrainFlakInterpreter
          sub_interpreter = BrainFlakInterpreter.new(injection, @left.get_data, @right.get_data, true)
          sub_interpreter.active_stack = @active_stack == @left ? sub_interpreter.left : sub_interpreter.right
          sub_interpreter.current_value = @current_value
-         while sub_interpreter.step
+         begin
+           while sub_interpreter.step
+           end
+         rescue Interrupt
+           STDERR.puts "\nKeyboard Interrupt"
+           STDERR.puts sub_interpreter.inspect
+           raise "Second Interrupt"
+         rescue RuntimeError => e
+           if e.to_s == "Second Interrupt" then
+             STDERR.puts sub_interpreter.inspect
+           end
+           raise e
          end
          @left.set_data(sub_interpreter.left.get_data)
          @right.set_data(sub_interpreter.right.get_data)
