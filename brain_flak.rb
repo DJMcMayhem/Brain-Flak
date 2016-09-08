@@ -10,7 +10,7 @@ arg_path = ""
 
 parser = OptionParser.new do |opts|
   opts.banner = "\nBrain-Flak Ruby Interpreter\n"\
-				"Usage:\n"\
+                "Usage:\n"\
                 "\tbrain_flak [options] source_file args...\n\n"
 
   opts.on("-d", "--debug", "Enables parsing of debug commands") do
@@ -67,15 +67,15 @@ if arg_path != "" then
   if !ascii_in
     numbers = input_file.read.gsub(/\s+/m, ' ').strip.split(" ")
   else
-    numbers = input_file.read.split("").map(&:ord)
+    numbers = input_file.read.split("")
   end
 
 else
-  if ascii_in and ARGV.length > 1
-    puts "ASCII mode (-a) and command line input are incompatible.\nTry giving input from a file.\n"
-    exit
+  if ascii_in
+    numbers = ARGV[1..-1].join(" ").split("")
+  else
+    numbers = ARGV[1..-1]
   end
-  numbers = ARGV[1..-1].reverse
 end
 
 if debug then
@@ -91,9 +91,9 @@ begin
     numbers.each do |a|
       raise BrainFlakError.new("Invalid integer in input: \"%s\""%[a], 0) if !(a =~ /^-?\d+$/)
     end
-    numbers.map! { |n| n.to_i }
+    numbers.map!(&:to_i)
   else
-    numbers.map! { |c| c.ord }
+    numbers.map!(&:ord)
   end
   interpreter = BrainFlakInterpreter.new(source, numbers, [], debug)
 
