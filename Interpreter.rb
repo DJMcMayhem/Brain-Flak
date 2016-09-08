@@ -29,8 +29,8 @@ end
 
 class BrainFlakInterpreter
 
-  attr_accessor :active_stack, :current_value
-  attr_reader :running, :left, :right
+  attr_accessor :current_value, :active_stack
+  attr_reader :running, :left, :right, :main_stack
 
   def initialize(source, left_in, right_in, debug)
     # Strips the source of any characters that aren't brackets or part of debug flags
@@ -121,6 +121,10 @@ class BrainFlakInterpreter
          begin
            while sub_interpreter.step
            end
+           if sub_interpreter.main_stack.length > 0
+            unmatched_brak = sub_interpreter.main_stack[0]
+            raise BrainFlakError.new("Unclosed '%s' character." % unmatched_brak[0], unmatched_brak[2])
+           end
          rescue Interrupt
            STDERR.puts "\nKeyboard Interrupt"
            STDERR.puts sub_interpreter.inspect
@@ -208,8 +212,6 @@ class BrainFlakInterpreter
 
   def finish
     if @main_stack.length > 0
-      unmatched_brak = @main_stack[0]
-      raise BrainFlakError.new("Unclosed '%s' character." % unmatched_brak[0], unmatched_brak[2])
     end
   end
 
