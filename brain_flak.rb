@@ -9,11 +9,9 @@ ascii_out = false
 arg_path = ""
 
 parser = OptionParser.new do |opts|
-  # This needs updating
-  opts.banner = "Welcome to Brain-Flak!\n\n"\
-                "Usage:\n"\
-                "\tbrain_flak source_file\n"\
-                "\tbrain_flak source_file args\n\n"
+  opts.banner = "\nBrain-Flak Ruby Interpreter\n"\
+				"Usage:\n"\
+                "\tbrain_flak [options] source_file args...\n\n"
 
   opts.on("-d", "--debug", "Enables parsing of debug commands") do
     debug = true
@@ -36,6 +34,16 @@ parser = OptionParser.new do |opts|
   opts.on("-c", "--ascii", "Take input and output in ASCII code points, rather than in decimal. This overrides previous -a and -A flags.") do 
     ascii_in = true
     ascii_out = true
+  end
+
+  opts.on("-h", "--help", "Prints info on the command line usage of Brain-Flak and then exits") do
+    puts opts
+    exit
+  end
+
+  opts.on("-v", "--version", "Prints the version of the Brain-Flak interpreter and then exits") do
+    puts "Brain-Flak Ruby Interpreter v1.0.0 DEVEL"
+    exit
   end
 end
 
