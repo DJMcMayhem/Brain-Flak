@@ -68,14 +68,24 @@ class BrainFlakInterpreter
         case str
           when "#dv"
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dv)
+          when "#av"
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:av)
           when "#dc"
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dc)
+          when "#ac"
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:ac)
           when "#dl"
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dl)
+          when "#al"
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:al)
           when "#dr"
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dr)
+          when "#ar"
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:ar)
           when "#df"
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:df)
+          when "#af"
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:af)
           when "#cy"
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:cy)
           when "#ij"
@@ -90,11 +100,17 @@ class BrainFlakInterpreter
       print "#%s " % flag.to_s
       case flag
         when :dv then puts @current_value
+        when :av then puts @current_value.chr
         when :dc then
           print @active_stack == @left ? "(left) " : "(right) "
           puts @active_stack.inspect_array
+        when :ac then
+          print @active_stack == @left ? "(left) " : "(right) "
+          puts @active_stack.ascii_inspect_array
         when :dl then puts @left.inspect_array
+        when :al then puts @left.ascii_inspect_array
         when :dr then puts @right.inspect_array
+        when :ar then puts @right.ascii_inspect_array
         when :df then
           builder = ""
           if @left.height > 0 then
@@ -108,9 +124,17 @@ class BrainFlakInterpreter
           if @active_stack == @left then
             builder += "^\n"
           else
-            builder += " "*(max_left+1) + "^"
+            builder += " "*(max_left+1) + "^\n"
           end
-          puts builder+"\n"
+          puts builder
+        when :af then
+          builder = @active_stack == @left ? "^\n" : "  ^\n"
+          for i in 0..[@left.height,@right.height].max do
+            c_right = (@right.at(i) != nil ? @right.at(i) : 32)
+            c_left  = (@left.at(i)  != nil ? @left.at(i)  : 32)
+            builder = c_left.chr + " " + c_right.chr + "\n" + builder
+          end
+          puts builder
        when :cy then puts @cycles
        when :ij then
          injection = $stdin.read

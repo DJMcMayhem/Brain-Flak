@@ -38,6 +38,10 @@ class Stack
     return @data.inspect
   end
 
+  def ascii_inspect_array
+    return @data.map {|a| a.chr}.join("")
+  end
+
   def height
     return @data.length
   end
