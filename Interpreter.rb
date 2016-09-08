@@ -210,11 +210,6 @@ class BrainFlakInterpreter
     return true
   end
 
-  def finish
-    if @main_stack.length > 0
-    end
-  end
-
   def debug_info
     source = String.new(str=@source)
     offset = 0
