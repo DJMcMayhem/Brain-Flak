@@ -6,6 +6,7 @@ require 'optparse'
 debug = false
 ascii_in = false
 ascii_out = false
+utf8 = false
 arg_path = ""
 
 parser = OptionParser.new do |opts|
@@ -34,6 +35,10 @@ parser = OptionParser.new do |opts|
   opts.on("-c", "--ascii", "Take input and output in ASCII code points, rather than in decimal. This overrides previous -a and -A flags.") do 
     ascii_in = true
     ascii_out = true
+  end
+
+  opts.on("-u", "--utf8", "Enables handling of UTF-8 characters in input and output") do
+    utf8 = true
   end
 
   opts.on("-h", "--help", "Prints info on the command line usage of Brain-Flak and then exits") do
@@ -89,11 +94,16 @@ source_length = source.length
 begin
   if !ascii_in
     numbers.each do |a|
-      raise BrainFlakError.new("Invalid integer in input: \"%s\""%[a], 0) if !(a =~ /^-?\d+$/)
+      raise BrainFlakError.new("Invalid integer in input: \"%s\"" % [a], 0) if !(a =~ /^-?\d+$/)
     end
     numbers.map!(&:to_i)
   else
     numbers.map!(&:ord)
+    if !utf8 then
+      numbers.each do |a|
+        raise BrainFlakError.new("Invalid character in input: \"%s\"" % [a.chr(Encoding::UTF_8)], 0) if a > 255
+      end
+    end
   end
   interpreter = BrainFlakInterpreter.new(source, numbers.reverse, [], debug)
 
@@ -103,7 +113,7 @@ begin
     unmatched_brak = interpreter.main_stack[0]
     raise BrainFlakError.new("Unclosed '%s' character." % unmatched_brak[0], unmatched_brak[2])
   end
-  interpreter.active_stack.print_stack(ascii_out)
+  interpreter.active_stack.print_stack(ascii_out,utf8)
 rescue BrainFlakError => e
   STDERR.puts e.message
 rescue Interrupt
