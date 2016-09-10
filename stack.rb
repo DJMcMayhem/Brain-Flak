@@ -38,8 +38,8 @@ class Stack
     return @data.inspect
   end
 
-  def ascii_inspect_array
-    return @data.map {|a| a.chr}.join("")
+  def char_inspect_array(n)
+    return @data.map {|a| (a%n).chr(Encoding::UTF_8)}.join("")
   end
 
   def height

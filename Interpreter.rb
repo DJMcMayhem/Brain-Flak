@@ -70,22 +70,32 @@ class BrainFlakInterpreter
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dv)
           when "#av"
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:av)
+          when "#uv"
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:uv)
           when "#dc"
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dc)
           when "#ac"
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:ac)
+          when "#uc"
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:uc)
           when "#dl"
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dl)
           when "#al"
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:al)
+          when "#ul"
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:ul)
           when "#dr"
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dr)
           when "#ar"
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:ar)
+          when "#ur"
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:ur)
           when "#df"
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:df)
           when "#af"
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:af)
+          when "#uf"
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:uf)
           when "#cy"
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:cy)
           when "#ij"
@@ -100,17 +110,24 @@ class BrainFlakInterpreter
       print "#%s " % flag.to_s
       case flag
         when :dv then puts @current_value
-        when :av then puts @current_value.chr
-        when :dc then
+        when :av then puts (@current_value%256).chr(Encoding::UTF_8)
+        when :uv then puts (@current_value%2**32).chr(Encoding::UTF_8)
+        when :dc,:ac,:uc then
           print @active_stack == @left ? "(left) " : "(right) "
-          puts @active_stack.inspect_array
-        when :ac then
-          print @active_stack == @left ? "(left) " : "(right) "
-          puts @active_stack.ascii_inspect_array
+          case flag
+            when :dc then
+              puts @active_stack.inspect_array
+            when :ac then
+              puts @active_stack.char_inspect_array(256)
+            when :uc then
+              puts @active_stack.char_inspect_array(2**32)
+          end
         when :dl then puts @left.inspect_array
-        when :al then puts @left.ascii_inspect_array
+        when :al then puts @left.char_inspect_array(256)
+        when :ul then puts @left.char_inspect_array(2**32)
         when :dr then puts @right.inspect_array
-        when :ar then puts @right.ascii_inspect_array
+        when :ar then puts @right.char_inspect_array(256)
+        when :ur then puts @right.char_inspect_array(2**32)
         when :df then
           builder = ""
           if @left.height > 0 then
@@ -127,12 +144,16 @@ class BrainFlakInterpreter
             builder += " "*(max_left+1) + "^\n"
           end
           puts builder
-        when :af then
+        when :af,:uf then
+          case flag
+            when :af then limit=256
+            when :uf then limit=2**32
+          end
           builder = @active_stack == @left ? "^\n" : "  ^\n"
           for i in 0..[@left.height,@right.height].max do
-            c_right = (@right.at(i) != nil ? @right.at(i) : 32)
-            c_left  = (@left.at(i)  != nil ? @left.at(i)  : 32)
-            builder = c_left.chr + " " + c_right.chr + "\n" + builder
+            c_right = (@right.at(i) != nil ? @right.at(i) : 32)%limit
+            c_left  = (@left.at(i)  != nil ? @left.at(i)  : 32)%limit
+            builder = (c_left.chr(Encoding::UTF_8)).ljust(2) + c_right.chr(Encoding::UTF_8) + "\n" + builder
           end
           puts builder
        when :cy then puts @cycles
