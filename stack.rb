@@ -23,7 +23,7 @@ class Stack
   end
 
   def print_stack(ascii_mode)
-    @data.each do |value|
+    @data.reverse.each do |value|
       print ascii_mode ? value.chr : value.to_s + "\n"
     end
 	print "\n" if ascii_mode

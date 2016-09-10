@@ -95,7 +95,7 @@ begin
   else
     numbers.map!(&:ord)
   end
-  interpreter = BrainFlakInterpreter.new(source, numbers, [], debug)
+  interpreter = BrainFlakInterpreter.new(source, numbers.reverse, [], debug)
 
   while interpreter.step
   end
