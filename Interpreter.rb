@@ -109,25 +109,25 @@ class BrainFlakInterpreter
     @debug_flags[index].each do |flag|
       print "#%s " % flag.to_s
       case flag
-        when :dv then puts @current_value
-        when :av then puts (@current_value%256).chr(Encoding::UTF_8)
-        when :uv then puts (@current_value%2**32).chr(Encoding::UTF_8)
+        when :dv then STDERR.puts @current_value
+        when :av then STDERR.puts (@current_value%256).chr(Encoding::UTF_8)
+        when :uv then STDERR.puts (@current_value%2**32).chr(Encoding::UTF_8)
         when :dc,:ac,:uc then
           print @active_stack == @left ? "(left) " : "(right) "
           case flag
             when :dc then
-              puts @active_stack.inspect_array
+              STDERR.puts @active_stack.inspect_array
             when :ac then
-              puts @active_stack.char_inspect_array(256)
+              STDERR.puts @active_stack.char_inspect_array(256)
             when :uc then
-              puts @active_stack.char_inspect_array(2**32)
+              STDERR.puts @active_stack.char_inspect_array(2**32)
           end
-        when :dl then puts @left.inspect_array
-        when :al then puts @left.char_inspect_array(256)
-        when :ul then puts @left.char_inspect_array(2**32)
-        when :dr then puts @right.inspect_array
-        when :ar then puts @right.char_inspect_array(256)
-        when :ur then puts @right.char_inspect_array(2**32)
+        when :dl then STDERR.puts @left.inspect_array
+        when :al then STDERR.puts @left.char_inspect_array(256)
+        when :ul then STDERR.puts @left.char_inspect_array(2**32)
+        when :dr then STDERR.puts @right.inspect_array
+        when :ar then STDERR.puts @right.char_inspect_array(256)
+        when :ur then STDERR.puts @right.char_inspect_array(2**32)
         when :df then
           builder = ""
           if @left.height > 0 then
@@ -143,7 +143,7 @@ class BrainFlakInterpreter
           else
             builder += " "*(max_left+1) + "^\n"
           end
-          puts builder
+          STDERR.puts builder
         when :af,:uf then
           case flag
             when :af then limit=256
@@ -155,11 +155,11 @@ class BrainFlakInterpreter
             c_left  = (@left.at(i)  != nil ? @left.at(i)  : 32)%limit
             builder = (c_left.chr(Encoding::UTF_8)).ljust(2) + c_right.chr(Encoding::UTF_8) + "\n" + builder
           end
-          puts builder
-       when :cy then puts @cycles
+          STDERR.puts builder
+       when :cy then STDERR.puts @cycles
        when :ij then
          injection = $stdin.read
-         puts
+         STDERR.puts
          sub_interpreter = BrainFlakInterpreter.new(injection, @left.get_data, @right.get_data, true)
          sub_interpreter.active_stack = @active_stack == @left ? sub_interpreter.left : sub_interpreter.right
          sub_interpreter.current_value = @current_value
@@ -171,12 +171,12 @@ class BrainFlakInterpreter
             raise BrainFlakError.new("Unclosed '%s' character." % unmatched_brak[0], unmatched_brak[2])
            end
          rescue Interrupt
-           STDERR.puts "\nKeyboard Interrupt"
-           STDERR.puts sub_interpreter.inspect
+           STDERR.STDERR.puts "\nKeyboard Interrupt"
+           STDERR.STDERR.puts sub_interpreter.inspect
            raise "Second Interrupt"
          rescue RuntimeError => e
            if e.to_s == "Second Interrupt" then
-             STDERR.puts sub_interpreter.inspect
+             STDERR.STDERR.puts sub_interpreter.inspect
            end
            raise e
          end

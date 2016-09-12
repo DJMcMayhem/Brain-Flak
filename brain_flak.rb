@@ -42,12 +42,12 @@ parser = OptionParser.new do |opts|
   end
 
   opts.on("-h", "--help", "Prints info on the command line usage of Brain-Flak and then exits") do
-    puts opts
+    STDERR.puts opts
     exit
   end
 
   opts.on("-v", "--version", "Prints the version of the Brain-Flak interpreter and then exits") do
-    puts "Brain-Flak Ruby Interpreter v1.0.0 DEVEL"
+    STDERR.puts "Brain-Flak Ruby Interpreter v1.0.0 DEVEL"
     exit
   end
 end
@@ -55,14 +55,14 @@ end
 begin
   parser.order!
 rescue OptionParser::ParseError => e
-  puts e
-  puts "\n"
-  puts parser
+  STDERR.puts e
+  STDERR.puts "\n"
+  STDERR.puts parser
   exit
 end
 
 if ARGV.length < 1 then
-  puts parser
+  STDERR.puts parser
   exit
 end
 
