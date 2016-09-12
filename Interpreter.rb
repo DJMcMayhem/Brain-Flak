@@ -107,7 +107,7 @@ class BrainFlakInterpreter
 
   def do_debug_flag(index)
     @debug_flags[index].each do |flag|
-      print "#%s " % flag.to_s
+      STDERR.print "#%s " % flag.to_s
       case flag
         when :dv then STDERR.puts @current_value
         when :av then STDERR.puts (@current_value%256).chr(Encoding::UTF_8)
@@ -185,6 +185,7 @@ class BrainFlakInterpreter
          @active_stack = sub_interpreter.active_stack == sub_interpreter.left ? @left : @right
          @current_value = sub_interpreter.current_value
       end
+      STDERR.flush
     end
   end
 
