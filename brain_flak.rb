@@ -6,6 +6,7 @@ require 'optparse'
 debug = false
 ascii_in = false
 ascii_out = false
+reverse = false
 utf8 = false
 arg_path = ""
 
@@ -35,6 +36,10 @@ parser = OptionParser.new do |opts|
   opts.on("-c", "--ascii", "Take input and output in ASCII code points, rather than in decimal. This overrides previous -a and -A flags.") do 
     ascii_in = true
     ascii_out = true
+  end
+
+  opts.on("-r", "--reverse", "Reverses the order that arguments are pushed onto the stack AND that values are printed at the end.") do
+    reverse = true
   end
 
   opts.on("-u", "--utf8", "Enables handling of UTF-8 characters in input and output") do
@@ -105,7 +110,8 @@ begin
       end
     end
   end
-  interpreter = BrainFlakInterpreter.new(source, numbers.reverse, [], debug)
+  numbers.reverse! if !reverse
+  interpreter = BrainFlakInterpreter.new(source, numbers, [], debug)
 
   while interpreter.step
   end
@@ -113,7 +119,7 @@ begin
     unmatched_brak = interpreter.main_stack[0]
     raise BrainFlakError.new("Unclosed '%s' character." % unmatched_brak[0], unmatched_brak[2])
   end
-  interpreter.active_stack.print_stack(ascii_out,utf8)
+  interpreter.active_stack.print_stack(ascii_out,reverse,utf8)
 rescue BrainFlakError => e
   STDERR.puts e.message
 rescue Interrupt

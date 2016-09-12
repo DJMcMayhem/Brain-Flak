@@ -22,8 +22,8 @@ class Stack
     return @data.last || 0
   end
 
-  def print_stack(ascii_mode,utf8)
-    @data.reverse.each do |value|
+  def print_stack(ascii_mode,reverse,utf8)
+    (reverse ? @data : @data.reverse).each do |value|
       print ascii_mode ? (utf8 ? value % 2**32 : 256).chr(Encoding::UTF_8) : value.to_s + "\n"
     end
 	print "\n" if ascii_mode
