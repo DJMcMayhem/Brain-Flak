@@ -67,18 +67,18 @@ end
 
 def is_opening_bracket?(b)
   if b != nil then
-    return '([{<'.include? b
+    return '([{<:'.include? b
   end
 end
 
 def is_closing_bracket?(b)
   if b != nil then
-    return ')]}>'.include? b
+    return ')]}>;'.include? b
   end
 end
 
 def brackets_match?(b1, b2)
   s = [b1, b2].join('')
-  return ['()', '[]', '{}', '<>'].include? s
+  return ['()', '[]', '{}', '<>', ':;'].include? s
 end
 

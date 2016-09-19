@@ -32,9 +32,10 @@ class BrainFlakInterpreter
   attr_accessor :current_value, :active_stack
   attr_reader :running, :left, :right, :main_stack
 
-  def initialize(source, left_in, right_in, debug)
+  def initialize(source, left_in, right_in, debug, classic)
     # Strips the source of any characters that aren't brackets or part of debug flags
-    @source = source.gsub(/(?:(?<=[()\[\]{}<>])|\s|^)[^#()\[\]{}<>]*/, "")
+    @classic = classic
+    @source = source.gsub(/(?:(?<=[()\[\]{}<>])|\s|^)[^#()\[\]{}<>]*/, "")    
     @left = Stack.new('Left')
     @right = Stack.new('Right')
     @main_stack = []
@@ -54,6 +55,9 @@ class BrainFlakInterpreter
     remove_debug_flags(debug)
     @running = @source.length > 0
     @run_debug = !@running && @debug_flags.size > 0
+    if classic then
+      @source = @source.gsub(/\[/,":").gsub(/]/,";")
+    end
   end
 
   def inactive_stack
@@ -160,7 +164,7 @@ class BrainFlakInterpreter
        when :ij then
          injection = $stdin.read
          STDERR.puts
-         sub_interpreter = BrainFlakInterpreter.new(injection, @left.get_data, @right.get_data, true)
+         sub_interpreter = BrainFlakInterpreter.new(injection, @left.get_data, @right.get_data, true, @classic)
          sub_interpreter.active_stack = @active_stack == @left ? sub_interpreter.left : sub_interpreter.right
          sub_interpreter.current_value = @current_value
          begin
@@ -168,7 +172,7 @@ class BrainFlakInterpreter
            end
            if sub_interpreter.main_stack.length > 0
             unmatched_brak = sub_interpreter.main_stack[0]
-            raise BrainFlakError.new("Unclosed '%s' character." % unmatched_brak[0], unmatched_brak[2])
+            raise BrainFlakError.new("Unclosed %s character." % unmatched_brak[0].gsub(/:/,"["), unmatched_brak[2])
            end
          rescue Interrupt
            STDERR.STDERR.puts "\nKeyboard Interrupt"
@@ -204,12 +208,13 @@ class BrainFlakInterpreter
     end
     @cycles += 1
     current_symbol = @source[@index..@index+1] or @source[@index]
-    if ['()', '[]', '{}', '<>'].include? current_symbol
+    if ['()', '[]', '{}', '<>', ':;'].include? current_symbol
       case current_symbol
         when '()' then @current_value += 1
         when '[]' then @current_value += @active_stack.height
         when '{}' then @current_value += @active_stack.pop
         when '<>' then @active_stack = @active_stack == @left ? @right : @left
+        when ':;' then @current_value -= 1
       end
       @last_op = :nilad
       @index += 2
@@ -219,7 +224,7 @@ class BrainFlakInterpreter
       if is_opening_bracket?(current_symbol) then
         if current_symbol == '{' and @active_stack.peek == 0 then
           new_index = read_until_matching(@source, @index)
-          raise BrainFlakError.new("Unmatched {", @index + 1) if new_index == nil
+          raise BrainFlakError.new("Unmatched { character.", @index + 1) if new_index == nil
           @index = new_index
         else
           @main_stack.push([current_symbol, @current_value, @index])
@@ -228,10 +233,11 @@ class BrainFlakInterpreter
 
       elsif is_closing_bracket?(current_symbol) then
         data = @main_stack.pop
-        raise BrainFlakError.new("Unmatched " + current_symbol, @index + 1) if data == nil
-        raise BrainFlakError.new("Mismatched closing bracket %s. Expected to close %s at character %d" % [current_symbol, data[0], data[2] + 1], @index + 1) if not brackets_match?(data[0], current_symbol)
+        raise BrainFlakError.new("Unmatched %s character." %current_symbol.gsub(/;/,"]"), @index + 1) if data == nil
+        raise BrainFlakError.new("Mismatched closing bracket %s. Expected to close %s at character %d" % [current_symbol.gsub(/;/,"]"), data[0].gsub(/:/,"["), data[2] + 1], @index + 1) if not brackets_match?(data[0], current_symbol)
 
         case current_symbol
+          when ';' then puts @current_value
           when ')' then @active_stack.push(@current_value)
           when ']' then @current_value *= -1
           when '>' then @current_value = 0
@@ -269,6 +275,9 @@ class BrainFlakInterpreter
 
   def inspect
     source = String.new(str=@source)
+    if @classic then 
+      source = source.gsub(/:/,"[").gsub(/;/,"]")
+    end
     index = @index
     offset = 0
     @debug_flags.each_pair do |k,v|

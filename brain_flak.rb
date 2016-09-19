@@ -3,6 +3,7 @@ require_relative './Interpreter.rb'
 
 require 'optparse'
 
+classic = false
 debug = false
 ascii_in = false
 ascii_out = false
@@ -14,6 +15,10 @@ parser = OptionParser.new do |opts|
   opts.banner = "\nBrain-Flak Ruby Interpreter\n"\
                 "Usage:\n"\
                 "\tbrain_flak [options] source_file args...\n\n"
+
+  opts.on("-C", "--classic", "Runs code as Brain-Flak Classic code") do
+    classic = true
+  end
 
   opts.on("-d", "--debug", "Enables parsing of debug commands") do
     debug = true
@@ -111,13 +116,13 @@ begin
     end
   end
   numbers.reverse! if !reverse
-  interpreter = BrainFlakInterpreter.new(source, numbers, [], debug)
+  interpreter = BrainFlakInterpreter.new(source, numbers, [], debug, classic)
 
   while interpreter.step
   end
   if interpreter.main_stack.length > 0
     unmatched_brak = interpreter.main_stack[0]
-    raise BrainFlakError.new("Unclosed '%s' character." % unmatched_brak[0], unmatched_brak[2])
+    raise BrainFlakError.new("Unclosed %s character." % unmatched_brak[0].gsub(/:/,"["), unmatched_brak[2])
   end
   interpreter.active_stack.print_stack(ascii_out,reverse,utf8)
 rescue BrainFlakError => e
