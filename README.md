@@ -76,7 +76,7 @@ Here are some full programs that do interesting things.
 
     ([]){(({}[()])<{({}[()]<({}<({}<>)<>>)>)}{}<>([]){{}({}<>)<>([])}{}<>>)}{}
     
- ### Move the top number *n* places down the stack
+### Move the top number *n* places down the stack
  
     (n[()])({()<({}[()]<({}<({}<>)<>>)>)>}{}<>){({}[()]<({}<>)<>>)}{}<>
 
