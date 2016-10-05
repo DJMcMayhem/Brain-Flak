@@ -1,6 +1,8 @@
 require_relative './stack.rb'
 require_relative './Interpreter.rb'
 
+VERSION_STRING =  "Brain-Flak Ruby Interpreter v1.0.1-dev"
+
 require 'optparse'
 
 debug = false
@@ -52,7 +54,7 @@ parser = OptionParser.new do |opts|
   end
 
   opts.on("-v", "--version", "Prints the version of the Brain-Flak interpreter and then exits") do
-    STDERR.puts "Brain-Flak Ruby Interpreter v1.0.0"
+    STDERR.puts VERSION_STRING
     exit
   end
 end
