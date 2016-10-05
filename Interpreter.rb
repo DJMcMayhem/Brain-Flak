@@ -100,6 +100,8 @@ class BrainFlakInterpreter
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:cy)
           when "#ij"
             @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:ij)
+          when "#dh"
+            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dh)
         end
       end
     end
@@ -184,6 +186,7 @@ class BrainFlakInterpreter
          @right.set_data(sub_interpreter.right.get_data)
          @active_stack = sub_interpreter.active_stack == sub_interpreter.left ? @left : @right
          @current_value = sub_interpreter.current_value
+      when :dh then STDERR.puts @active_stack.height
       end
       STDERR.flush
     end
