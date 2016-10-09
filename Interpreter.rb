@@ -140,12 +140,12 @@ class BrainFlakInterpreter
             raise BrainFlakError.new("Unclosed '%s' character." % unmatched_brak[0], unmatched_brak[2])
            end
          rescue Interrupt
-           STDERR.STDERR.puts "\nKeyboard Interrupt"
-           STDERR.STDERR.puts sub_interpreter.inspect
+           STDERR.puts "\nKeyboard Interrupt"
+           STDERR.puts sub_interpreter.inspect
            raise "Second Interrupt"
          rescue RuntimeError => e
            if e.to_s == "Second Interrupt" then
-             STDERR.STDERR.puts sub_interpreter.inspect
+             STDERR.puts sub_interpreter.inspect
            end
            raise e
          end
