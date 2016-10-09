@@ -38,7 +38,6 @@ class BrainFlakInterpreter
     source = source.gsub(/(^[^#]*)#.*\n/, '\1')
     # Strips the source of any characters that aren't brackets or part of debug flags
     @source = source.gsub(/(?<=[()\[\]<>{}])[^@()\[\]<>{}]*/, "")
-    puts @source
     @left = Stack.new('Left')
     @right = Stack.new('Right')
     @main_stack = []
@@ -65,16 +64,16 @@ class BrainFlakInterpreter
   end
 
   def remove_debug_flags(debug)
-    while match = /@[^@()\[\]{}<>\s]+/.match(@source) do
+    while match = /@[^@()\[\]{}<>]+/.match(@source) do
       str = @source.slice!(match.begin(0)..match.end(0)-1)
       slicer = /@[^'\d]*/.match(str)
-      @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(DebugFlag.new(str.slice(0..slicer.end(0)),str.slice(slicer.begin(0)..-1)))
+      @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(DebugFlag.new(str.slice(1..slicer.end(0)-1),str.slice(slicer.end(0)..-1)))
     end
   end
 
   def do_debug_flag(index)
     @debug_flags[index].each do |flag|
-      STDERR.print "%s " % flag.to_s
+      STDERR.print "@%s " % flag.to_s
       case flag.to_s
         when "dv" then STDERR.puts @current_value
         when "av" then STDERR.puts (@current_value%256).chr(Encoding::UTF_8)
@@ -152,6 +151,9 @@ class BrainFlakInterpreter
          @active_stack = sub_interpreter.active_stack == sub_interpreter.left ? @left : @right
          @current_value = sub_interpreter.current_value
       when "dh" then STDERR.puts @active_stack.height
+      when "lt" then 
+        print "\n"
+        @current_value += flag.get_data
       end
       STDERR.flush
     end
