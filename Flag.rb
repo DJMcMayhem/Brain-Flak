@@ -7,7 +7,7 @@ class DebugFlag
     elsif /\d+/.match(data) then
       @data = data.to_i
     else
-      #Throw error
+      raise BrainFlakError.new("Parsing Error (This should not happen)",0)
     end
   end
   def to_s

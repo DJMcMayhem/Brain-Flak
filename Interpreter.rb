@@ -65,7 +65,12 @@ class BrainFlakInterpreter
     while match = /@[^@()\[\]{}<>]+/.match(@source) do
       str = @source.slice!(match.begin(0)..match.end(0)-1)
       slicer = /@[^'\d]*/.match(str)
-      @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(DebugFlag.new(str.slice(1..slicer.end(0)-1),str.slice(slicer.end(0)..-1)))
+      flag = str.slice(1..slicer.end(0)-1)
+      data = str.slice(slicer.end(0)..-1)
+      if /(\d*|'.')/.match(data).end(0) != data.length then
+        raise BrainFlakError.new("Invalid data, %s, in flag, @%s" % [data,flag],match.begin(0))
+      end
+      @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(DebugFlag.new(flag,data))
     end
   end
 
