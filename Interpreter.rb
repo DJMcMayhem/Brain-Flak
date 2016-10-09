@@ -1,5 +1,6 @@
 require 'io/console'
 require_relative './stack.rb'
+require_relative './Flag.rb'
 
 class BrainFlakError < StandardError
 
@@ -34,7 +35,8 @@ class BrainFlakInterpreter
 
   def initialize(source, left_in, right_in, debug)
     # Strips the source of any characters that aren't brackets or part of debug flags
-    @source = source.gsub(/(?:(?<=[()\[\]{}<>])|\s|^)[^#()\[\]{}<>]*/, "")
+    @source = source.gsub(/(?<=[()\[\]<>{}])[^@()\[\]<>{}]*/, "")
+    puts @source
     @left = Stack.new('Left')
     @right = Stack.new('Right')
     @main_stack = []
@@ -61,76 +63,37 @@ class BrainFlakInterpreter
   end
 
   def remove_debug_flags(debug)
-    while match = /#[^#()\[\]{}<>\s]*/.match(@source) do
+    while match = /@[^@()\[\]{}<>\s]+/.match(@source) do
       str = @source.slice!(match.begin(0)..match.end(0)-1)
-
-      if debug then
-        case str
-          when "#dv"
-            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dv)
-          when "#av"
-            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:av)
-          when "#uv"
-            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:uv)
-          when "#dc"
-            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dc)
-          when "#ac"
-            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:ac)
-          when "#uc"
-            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:uc)
-          when "#dl"
-            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dl)
-          when "#al"
-            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:al)
-          when "#ul"
-            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:ul)
-          when "#dr"
-            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dr)
-          when "#ar"
-            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:ar)
-          when "#ur"
-            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:ur)
-          when "#df"
-            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:df)
-          when "#af"
-            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:af)
-          when "#uf"
-            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:uf)
-          when "#cy"
-            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:cy)
-          when "#ij"
-            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:ij)
-          when "#dh"
-            @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(:dh)
-        end
-      end
+      slicer = /@[^'\d]*/.match(str)
+      @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(DebugFlag.new(str.slice(0..slicer.end(0)),str.slice(slicer.begin(0)..-1)))
     end
   end
 
   def do_debug_flag(index)
     @debug_flags[index].each do |flag|
-      STDERR.print "#%s " % flag.to_s
-      case flag
-        when :dv then STDERR.puts @current_value
-        when :av then STDERR.puts (@current_value%256).chr(Encoding::UTF_8)
-        when :uv then STDERR.puts (@current_value%2**32).chr(Encoding::UTF_8)
-        when :dc,:ac,:uc then
+      STDERR.print "%s " % flag.to_s
+      case flag.to_s
+        when "dv" then STDERR.puts @current_value
+        when "av" then STDERR.puts (@current_value%256).chr(Encoding::UTF_8)
+        when "uv" then STDERR.puts (@current_value%2**32).chr(Encoding::UTF_8)
+        when "dc","ac","uc" then
           print @active_stack == @left ? "(left) " : "(right) "
-          case flag
-            when :dc then
+          case flag.to_s
+            when "dc" then
               STDERR.puts @active_stack.inspect_array
-            when :ac then
+            when "ac" then
               STDERR.puts @active_stack.char_inspect_array(256)
-            when :uc then
+            when "uc" then
               STDERR.puts @active_stack.char_inspect_array(2**32)
           end
-        when :dl then STDERR.puts @left.inspect_array
-        when :al then STDERR.puts @left.char_inspect_array(256)
-        when :ul then STDERR.puts @left.char_inspect_array(2**32)
-        when :dr then STDERR.puts @right.inspect_array
-        when :ar then STDERR.puts @right.char_inspect_array(256)
-        when :ur then STDERR.puts @right.char_inspect_array(2**32)
-        when :df then
+        when "dl" then STDERR.puts @left.inspect_array
+        when "al" then STDERR.puts @left.char_inspect_array(256)
+        when "ul" then STDERR.puts @left.char_inspect_array(2**32)
+        when "dr" then STDERR.puts @right.inspect_array
+        when "ar" then STDERR.puts @right.char_inspect_array(256)
+        when "ur" then STDERR.puts @right.char_inspect_array(2**32)
+        when "df" then
           builder = ""
           if @left.height > 0 then
             max_left = @left.get_data.map { |item| item.to_s.length}.max
@@ -146,10 +109,10 @@ class BrainFlakInterpreter
             builder += " "*(max_left+1) + "^\n"
           end
           STDERR.puts builder
-        when :af,:uf then
-          case flag
-            when :af then limit=256
-            when :uf then limit=2**32
+        when "af","uf" then
+          case flag.to_s
+            when "af" then limit=256
+            when "uf" then limit=2**32
           end
           builder = @active_stack == @left ? "^\n" : "  ^\n"
           for i in 0..[@left.height,@right.height].max do
@@ -158,8 +121,8 @@ class BrainFlakInterpreter
             builder = (c_left.chr(Encoding::UTF_8)).ljust(2) + c_right.chr(Encoding::UTF_8) + "\n" + builder
           end
           STDERR.puts builder
-       when :cy then STDERR.puts @cycles
-       when :ij then
+       when "cy" then STDERR.puts @cycles
+       when "ij" then
          injection = $stdin.read
          STDERR.puts
          sub_interpreter = BrainFlakInterpreter.new(injection, @left.get_data, @right.get_data, true)
@@ -186,7 +149,7 @@ class BrainFlakInterpreter
          @right.set_data(sub_interpreter.right.get_data)
          @active_stack = sub_interpreter.active_stack == sub_interpreter.left ? @left : @right
          @current_value = sub_interpreter.current_value
-      when :dh then STDERR.puts @active_stack.height
+      when "dh" then STDERR.puts @active_stack.height
       end
       STDERR.flush
     end
