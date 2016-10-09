@@ -34,6 +34,8 @@ class BrainFlakInterpreter
   attr_reader :running, :left, :right, :main_stack
 
   def initialize(source, left_in, right_in, debug)
+    # Strip comments
+    source = source.gsub(/(^[^#]*)#.*\n/, '\1')
     # Strips the source of any characters that aren't brackets or part of debug flags
     @source = source.gsub(/(?<=[()\[\]<>{}])[^@()\[\]<>{}]*/, "")
     puts @source
