@@ -72,6 +72,14 @@ Here are some full programs that do interesting things.
 
     ({({})({}[()])}{})
 
+### Reverse all inputs
+
+    ([]){(({}[()])<{({}[()]<({}<({}<>)<>>)>)}{}<>([]){{}({}<>)<>([])}{}<>>)}{}
+    
+### Move the top number *n* places down the stack
+ 
+    (n[()])({()<({}[()]<({}<({}<>)<>>)>)>}{}<>){({}[()]<({}<>)<>>)}{}<>
+
 ### Integer divide two numbers (Positive only):
 
     (<({}(<>))>)<>{({}[()])<>(({}()[({}<({}())>)])){{}(<({}({}<({}[()])>))>)}{}<>}{}<>{}{}({}<>)
