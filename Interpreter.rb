@@ -37,7 +37,7 @@ class BrainFlakInterpreter
     # Strip comments
     source = source.gsub(/(^[^#]*)#.*(\n|$)/, '\1')
     # Strips the source of any characters that aren't brackets or part of debug flags
-    @source = source.gsub(/(?<=[()\[\]<>{}])[^@()\[\]<>{}]*/, "")
+    @source = source.gsub(/(?<=^|[()\[\]<>{}])[^@()\[\]<>{}]*/, "")
     @left = Stack.new('Left')
     @right = Stack.new('Right')
     @main_stack = []
