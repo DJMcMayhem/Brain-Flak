@@ -35,7 +35,7 @@ class BrainFlakInterpreter
 
   def initialize(source, left_in, right_in, debug)
     # Strip comments
-    source = source.gsub(/(^[^#]*)#.*\n/, '\1')
+    source = source.gsub(/(^[^#]*)#.*(\n|$)/, '\1')
     # Strips the source of any characters that aren't brackets or part of debug flags
     @source = source.gsub(/(?<=[()\[\]<>{}])[^@()\[\]<>{}]*/, "")
     @left = Stack.new('Left')
@@ -72,7 +72,9 @@ class BrainFlakInterpreter
       if /(\d*|'.')/.match(data).end(0) != data.length then
         raise BrainFlakError.new("Invalid data, %s, in flag, @%s" % [data,flag],match.begin(0))
       end
-      @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(DebugFlag.new(flag,data))
+      if debug then
+        @debug_flags[match.begin(0)] = @debug_flags[match.begin(0)].push(DebugFlag.new(flag,data))
+      end
     end
   end
 
