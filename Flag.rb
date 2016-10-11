@@ -6,7 +6,7 @@ class DebugFlag
       @data = data[1].ord
     elsif /\d+/.match(data) then
       @data = data.to_i
-    elif data = "" then
+    elsif data == "" then
       @data = 0
     else
       raise BrainFlakError.new("Parsing Error (This should not happen)",0)
