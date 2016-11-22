@@ -70,7 +70,7 @@ end
 
 source_path = ARGV[0]
 if arg_path != "" then
-  input_file = File.open(arg_path, 'r')
+  input_file = File.open(arg_path, 'r:UTF-8')
   if !ascii_in
     numbers = input_file.read.gsub(/\s+/m, ' ').strip.split(" ")
   else
@@ -101,9 +101,6 @@ begin
     numbers.map!(&:to_i)
   else
     numbers.map!(&:ord)
-    numbers.each do |a|
-      raise BrainFlakError.new("Invalid character in input: \"%s\"" % [a.chr(Encoding::UTF_8)], 0) if a > 255
-    end
   end
   numbers.reverse! if !reverse
   interpreter = BrainFlakInterpreter.new(source, numbers, [], debug)
