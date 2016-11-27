@@ -37,9 +37,11 @@ class BrainFlakInterpreter
     # Strip comments
     source = source.gsub(/(^[^#]*)#.*(\n|$)/, '\1')
     # Strips the source of any characters that aren't brackets or part of debug flags
-    @source = source.gsub(/(?<=^|[()\[\]<>{}])[^@()\[\]<>{}]*/, "")
+    @source = source.gsub(/(?<=^|[()\[\]<>{}]|\s)[^@()\[\]<>{}]*/, "")
     # Strips extra @s
     @source = @source.gsub(/@+(?=[()\[\]<>{}])/, "")
+    # Strips extra whitespace
+    @source = @source.gsub(/\s/,"")
     @left = Stack.new('Left')
     @right = Stack.new('Right')
     @main_stack = []
@@ -66,7 +68,7 @@ class BrainFlakInterpreter
   end
 
   def remove_debug_flags(debug)
-    while match = /@[^@()\[\]{}<>]+/.match(@source) do
+    while match = /@[^@()\[\]{}<>\s]+/.match(@source) do
       str = @source.slice!(match.begin(0)..match.end(0)-1)
       slicer = /@[^'\d]*/.match(str)
       flag = str.slice(1..slicer.end(0)-1)
