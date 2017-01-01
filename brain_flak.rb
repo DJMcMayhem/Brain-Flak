@@ -109,7 +109,7 @@ begin
   end
   if interpreter.main_stack.length > 0
     unmatched_brak = interpreter.main_stack[0]
-    raise BrainFlakError.new("Unclosed '%s' character." % unmatched_brak[0], unmatched_brak[2])
+    raise BrainFlakError.new("Unmatched '%s' character." % unmatched_brak[0], unmatched_brak[2] + 1)
   end
   interpreter.active_stack.print_stack(ascii_out, reverse)
 

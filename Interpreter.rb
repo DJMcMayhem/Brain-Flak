@@ -145,7 +145,7 @@ class BrainFlakInterpreter
            end
            if sub_interpreter.main_stack.length > 0
             unmatched_brak = sub_interpreter.main_stack[0]
-            raise BrainFlakError.new("Unclosed '%s' character." % unmatched_brak[0], unmatched_brak[2])
+            raise BrainFlakError.new("Unmatched '%s' character." % unmatched_brak[0], unmatched_brak[2] + 1)
            end
          rescue Interrupt
            STDERR.puts "\nKeyboard Interrupt"
@@ -200,7 +200,7 @@ class BrainFlakInterpreter
       if is_opening_bracket?(current_symbol) then
         if current_symbol == '{' and @active_stack.peek == 0 then
           new_index = read_until_matching(@source, @index)
-          raise BrainFlakError.new("Unmatched {", @index + 1) if new_index == nil
+          raise BrainFlakError.new("Unmatched '{' character", @index + 1) if new_index == nil
           @index = new_index
         else
           @main_stack.push([current_symbol, @current_value, @index])
@@ -209,8 +209,9 @@ class BrainFlakInterpreter
 
       elsif is_closing_bracket?(current_symbol) then
         data = @main_stack.pop
-        raise BrainFlakError.new("Unmatched " + current_symbol, @index + 1) if data == nil
-        raise BrainFlakError.new("Mismatched closing bracket %s. Expected to close %s at character %d" % [current_symbol, data[0], data[2] + 1], @index + 1) if not brackets_match?(data[0], current_symbol)
+        raise BrainFlakError.new("Unmatched '" + current_symbol + "' character", @index + 1) if data == nil
+        #Here I use @source[@index] I am not sure why but @current symbol always yields nothing
+        raise BrainFlakError.new("Expected to close '%s' from location %d but instead encountered '%s' " % [data[0] , data[2] + 1, @source[@index]], @index + 1) if not brackets_match?(data[0], current_symbol)
 
         case current_symbol
           when ')' then @active_stack.push(@current_value)
