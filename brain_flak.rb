@@ -7,7 +7,7 @@ require 'optparse'
 
 debug = false
 do_in = true
-do_out = false
+do_out = true
 ascii_in = false
 ascii_out = false
 reverse = false
