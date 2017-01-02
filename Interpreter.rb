@@ -166,8 +166,8 @@ class BrainFlakInterpreter
         print "\n"
         @current_value += flag.get_data
       when "pu" then
-	#Take input
-        garbage = gets.chomp
+        #Take input
+        $stdin.gets
       when "ex" then
         #Exit program
         @running = false
