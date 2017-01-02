@@ -165,6 +165,16 @@ class BrainFlakInterpreter
       when "lt" then 
         print "\n"
         @current_value += flag.get_data
+      when "pu" then
+	#Take input
+        garbage = gets.chomp
+      when "ex" then
+        #Exit program
+        @running = false
+        #Clear the stack to prevent error
+        @main_stack = []
+        #Add a newline for formatting
+        puts
       end
       STDERR.flush
     end
