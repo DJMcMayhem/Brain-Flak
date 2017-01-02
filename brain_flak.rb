@@ -6,6 +6,8 @@ VERSION_STRING =  "Brain-Flak Ruby Interpreter v1.2.0"
 require 'optparse'
 
 debug = false
+do_in = true
+do_out = false
 ascii_in = false
 ascii_out = false
 reverse = false
@@ -39,6 +41,14 @@ parser = OptionParser.new do |opts|
     ascii_out = true
   end
 
+  opts.on("-n","--no-in", "Input is ignored") do
+    do_in = false
+  end
+
+  opts.on("-N","--no-out", "No output is produced.  Debug flags and error messages still appear") do
+    do_out = false
+  end
+
   opts.on("-r", "--reverse", "Reverses the order that arguments are pushed onto the stack AND that values are printed at the end.") do
     reverse = true
   end
@@ -69,14 +79,18 @@ if ARGV.length < 1 then
 end
 
 source_path = ARGV[0]
-if arg_path != "" then
+#No input
+if !do_in then
+  numbers = []
+#Input from file
+elsif arg_path != "" then
   input_file = File.open(arg_path, 'r:UTF-8')
   if !ascii_in
     numbers = input_file.read.gsub(/\s+/m, ' ').strip.split(" ")
   else
     numbers = input_file.read.split("")
   end
-
+#Input from command line
 else
   if ascii_in
     numbers = ARGV[1..-1].join(" ").split("")
@@ -111,7 +125,9 @@ begin
     unmatched_brak = interpreter.main_stack[0]
     raise BrainFlakError.new("Unmatched '%s' character." % unmatched_brak[0], unmatched_brak[2] + 1)
   end
-  interpreter.active_stack.print_stack(ascii_out, reverse)
+  if do_out then
+    interpreter.active_stack.print_stack(ascii_out, reverse)
+  end
 
 rescue BrainFlakError => e
   STDERR.puts e.message
