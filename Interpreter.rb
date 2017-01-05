@@ -1,17 +1,7 @@
 require 'io/console'
 require_relative './stack.rb'
 require_relative './Flag.rb'
-
-class BrainFlakError < StandardError
-
-  attr_reader :cause, :pos
-
-  def initialize(cause, pos)
-    @cause = cause
-    @pos = pos
-    super("Error at character %d: %s" % [pos, cause])
-  end
-end
+require_relative './BrainFlakError.rb'
 
 def read_until_matching(s, start)
   stack_height = 0
