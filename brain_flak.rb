@@ -22,7 +22,28 @@ parser = OptionParser.new do |opts|
     debug = true
   end
 
+  opts.on("-H", "--help-debug", "Prints a list of debug flags and what they do") do
+    flag_desc= [
+      ["ac","Prints the current stack as ASCII characters"],
+      ["al","Prints the left stack as ASCII characters"],
+      ["av","Prints the current value of the scope as an ASCII character"],
+      ["ar","Prints the right stack as ASCII characters"],
+      ["cy","Prints the number of elapsed cycles"],
+      ["dc","Prints the current stack in decimal"],
+      ["dl","Prints the left stack in decimal"],
+      ["dv","Prints the current value of the scope in decimal"],
+      ["dr","Prints the right stack in decimal"],
+      ["ex","Terminates the program"],
+      ["ij","Pauses program and prompts user for Brain-Flak code to be run in place of the flag"],
+      ["pu","Pauses the program until the user hits the return key"],
+    ]    
+    flag_desc.each do | flag |
+      puts "   "+flag[0]+":       "+flag[1]
+    end
+  end
+
   opts.on("-f", "--file=FILE", "Reads input for the brain-flak program from FILE, rather than from the command line.") do |file|
+    puts file
     arg_path = file
   end
 
