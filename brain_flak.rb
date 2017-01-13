@@ -1,11 +1,13 @@
 require_relative './stack.rb'
 require_relative './Interpreter.rb'
 
-VERSION_STRING =  "Brain-Flak Ruby Interpreter v1.2.0"
+VERSION_STRING =  "Brain-Flak Ruby Interpreter v1.2.0-dev"
 
 require 'optparse'
 
 debug = false
+do_in = true
+do_out = true
 ascii_in = false
 ascii_out = false
 reverse = false
@@ -20,7 +22,28 @@ parser = OptionParser.new do |opts|
     debug = true
   end
 
+  opts.on("-H", "--help-debug", "Prints a list of debug flags and what they do") do
+    flag_desc= [
+      ["ac","Prints the current stack as ASCII characters"],
+      ["al","Prints the left stack as ASCII characters"],
+      ["av","Prints the current value of the scope as an ASCII character"],
+      ["ar","Prints the right stack as ASCII characters"],
+      ["cy","Prints the number of elapsed cycles"],
+      ["dc","Prints the current stack in decimal"],
+      ["dl","Prints the left stack in decimal"],
+      ["dv","Prints the current value of the scope in decimal"],
+      ["dr","Prints the right stack in decimal"],
+      ["ex","Terminates the program"],
+      ["ij","Pauses program and prompts user for Brain-Flak code to be run in place of the flag"],
+      ["pu","Pauses the program until the user hits the return key"],
+    ]    
+    flag_desc.each do | flag |
+      STDERR.puts "   "+flag[0]+":       "+flag[1]
+    end
+  end
+
   opts.on("-f", "--file=FILE", "Reads input for the brain-flak program from FILE, rather than from the command line.") do |file|
+    puts file
     arg_path = file
   end
 
@@ -37,6 +60,14 @@ parser = OptionParser.new do |opts|
   opts.on("-c", "--ascii", "Take input and output in character code points, rather than in decimal. This overrides previous -a and -A flags.") do 
     ascii_in = true
     ascii_out = true
+  end
+
+  opts.on("-n","--no-in", "Input is ignored") do
+    do_in = false
+  end
+
+  opts.on("-N","--no-out", "No output is produced.  Debug flags and error messages still appear") do
+    do_out = false
   end
 
   opts.on("-r", "--reverse", "Reverses the order that arguments are pushed onto the stack AND that values are printed at the end.") do
@@ -69,14 +100,18 @@ if ARGV.length < 1 then
 end
 
 source_path = ARGV[0]
-if arg_path != "" then
+#No input
+if !do_in then
+  numbers = []
+#Input from file
+elsif arg_path != "" then
   input_file = File.open(arg_path, 'r:UTF-8')
   if !ascii_in
     numbers = input_file.read.gsub(/\s+/m, ' ').strip.split(" ")
   else
     numbers = input_file.read.split("")
   end
-
+#Input from command line
 else
   if ascii_in
     numbers = ARGV[1..-1].join(" ").split("")
@@ -111,7 +146,9 @@ begin
     unmatched_brak = interpreter.main_stack[0]
     raise BrainFlakError.new("Unmatched '%s' character." % unmatched_brak[0], unmatched_brak[2] + 1)
   end
-  interpreter.active_stack.print_stack(ascii_out, reverse)
+  if do_out then
+    interpreter.active_stack.print_stack(ascii_out, reverse)
+  end
 
 rescue BrainFlakError => e
   STDERR.puts e.message

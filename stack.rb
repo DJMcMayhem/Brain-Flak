@@ -1,3 +1,5 @@
+require_relative './BrainFlakError.rb'
+
 class Stack
   def initialize(name)
     @name = name
@@ -25,7 +27,12 @@ class Stack
   def print_stack(ascii_mode, reverse)
     (reverse ? @data: @data.reverse).each do |value|
       if ascii_mode
-        print (value % 2 ** 32).chr(Encoding::UTF_8)
+        begin
+          print (value % 2 ** 32).chr(Encoding::UTF_8)
+        rescue RangeError => ex
+          #Error at character 0 is probably not right but I can't access the proper location from here
+          raise BrainFlakError.new("Value #{value} is out of range for UTF_8 encoding.",0)
+        end
       else
         print value.to_s + "\n"
       end
