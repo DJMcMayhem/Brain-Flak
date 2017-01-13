@@ -38,7 +38,7 @@ parser = OptionParser.new do |opts|
       ["pu","Pauses the program until the user hits the return key"],
     ]    
     flag_desc.each do | flag |
-      puts "   "+flag[0]+":       "+flag[1]
+      STDERR.puts "   "+flag[0]+":       "+flag[1]
     end
   end
 
