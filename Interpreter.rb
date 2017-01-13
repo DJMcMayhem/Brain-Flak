@@ -1,17 +1,7 @@
 require 'io/console'
 require_relative './stack.rb'
 require_relative './Flag.rb'
-
-class BrainFlakError < StandardError
-
-  attr_reader :cause, :pos
-
-  def initialize(cause, pos)
-    @cause = cause
-    @pos = pos
-    super("Error at character %d: %s" % [pos, cause])
-  end
-end
+require_relative './BrainFlakError.rb'
 
 def read_until_matching(s, start)
   stack_height = 0
@@ -89,22 +79,18 @@ class BrainFlakInterpreter
         when "dv" then STDERR.puts @current_value
         when "av" then STDERR.puts (@current_value%256).chr(Encoding::UTF_8)
         when "uv" then STDERR.puts (@current_value%2**32).chr(Encoding::UTF_8)
-        when "dc","ac","uc" then
+        when "dc","ac" then
           print @active_stack == @left ? "(left) " : "(right) "
           case flag.to_s
             when "dc" then
               STDERR.puts @active_stack.inspect_array
             when "ac" then
-              STDERR.puts @active_stack.char_inspect_array(256)
-            when "uc" then
               STDERR.puts @active_stack.char_inspect_array(2**32)
           end
         when "dl" then STDERR.puts @left.inspect_array
-        when "al" then STDERR.puts @left.char_inspect_array(256)
-        when "ul" then STDERR.puts @left.char_inspect_array(2**32)
+        when "al" then STDERR.puts @left.char_inspect_array(2**32)
         when "dr" then STDERR.puts @right.inspect_array
-        when "ar" then STDERR.puts @right.char_inspect_array(256)
-        when "ur" then STDERR.puts @right.char_inspect_array(2**32)
+        when "ar" then STDERR.puts @right.char_inspect_array(2**32)
         when "df" then
           builder = ""
           if @left.height > 0 then
@@ -121,11 +107,8 @@ class BrainFlakInterpreter
             builder += " "*(max_left+1) + "^\n"
           end
           STDERR.puts builder
-        when "af","uf" then
-          case flag.to_s
-            when "af" then limit=256
-            when "uf" then limit=2**32
-          end
+        when "af" then
+          limit=2**32
           builder = @active_stack == @left ? "^\n" : "  ^\n"
           for i in 0..[@left.height,@right.height].max do
             c_right = (@right.at(i) != nil ? @right.at(i) : 32)%limit
@@ -145,7 +128,7 @@ class BrainFlakInterpreter
            end
            if sub_interpreter.main_stack.length > 0
             unmatched_brak = sub_interpreter.main_stack[0]
-            raise BrainFlakError.new("Unclosed '%s' character." % unmatched_brak[0], unmatched_brak[2])
+            raise BrainFlakError.new("Unmatched '%s' character." % unmatched_brak[0], unmatched_brak[2] + 1)
            end
          rescue Interrupt
            STDERR.puts "\nKeyboard Interrupt"
@@ -165,6 +148,16 @@ class BrainFlakInterpreter
       when "lt" then 
         print "\n"
         @current_value += flag.get_data
+      when "pu" then
+        #Take input
+        $stdin.gets
+      when "ex" then
+        #Exit program
+        @running = false
+        #Clear the stack to prevent error
+        @main_stack = []
+        #Add a newline for formatting
+        STDERR.puts
       end
       STDERR.flush
     end
@@ -200,7 +193,7 @@ class BrainFlakInterpreter
       if is_opening_bracket?(current_symbol) then
         if current_symbol == '{' and @active_stack.peek == 0 then
           new_index = read_until_matching(@source, @index)
-          raise BrainFlakError.new("Unmatched {", @index + 1) if new_index == nil
+          raise BrainFlakError.new("Unmatched '{' character", @index + 1) if new_index == nil
           @index = new_index
         else
           @main_stack.push([current_symbol, @current_value, @index])
@@ -209,8 +202,9 @@ class BrainFlakInterpreter
 
       elsif is_closing_bracket?(current_symbol) then
         data = @main_stack.pop
-        raise BrainFlakError.new("Unmatched " + current_symbol, @index + 1) if data == nil
-        raise BrainFlakError.new("Mismatched closing bracket %s. Expected to close %s at character %d" % [current_symbol, data[0], data[2] + 1], @index + 1) if not brackets_match?(data[0], current_symbol)
+        raise BrainFlakError.new("Unmatched '" + current_symbol + "' character", @index + 1) if data == nil
+        #Here I use @source[@index] I am not sure why but @current symbol always yields nothing
+        raise BrainFlakError.new("Expected to close '%s' from location %d but instead encountered '%s' " % [data[0] , data[2] + 1, @source[@index]], @index + 1) if not brackets_match?(data[0], current_symbol)
 
         case current_symbol
           when ')' then @active_stack.push(@current_value)
