@@ -45,7 +45,6 @@ parser = OptionParser.new do |opts|
   end
 
   opts.on("-f", "--file=FILE", "Reads input for the brain-flak program from FILE, rather than from the command line.") do |file|
-    puts file
     arg_path = file
   end
 
