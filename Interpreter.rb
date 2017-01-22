@@ -146,7 +146,7 @@ class BrainFlakInterpreter
          @current_value = sub_interpreter.current_value
       when "dh" then STDERR.puts @active_stack.height
       when "lt" then 
-        print "\n"
+        STDERR.print "\n"
         @current_value += flag.get_data
       when "pu" then
         #Take input
