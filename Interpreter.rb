@@ -80,7 +80,7 @@ class BrainFlakInterpreter
         when "av" then STDERR.puts (@current_value%256).chr(Encoding::UTF_8)
         when "uv" then STDERR.puts (@current_value%2**32).chr(Encoding::UTF_8)
         when "dc","ac" then
-          print @active_stack == @left ? "(left) " : "(right) "
+          STDERR.print @active_stack == @left ? "(left) " : "(right) "
           case flag.to_s
             when "dc" then
               STDERR.puts @active_stack.inspect_array
