@@ -23,7 +23,7 @@ class BrainFlakInterpreter
   attr_accessor :current_value, :active_stack
   attr_reader :running, :left, :right, :main_stack
 
-  def initialize(source, left_in, right_in, debug)
+  def initialize(source, left_in, right_in, debug, max_cycles)
     # Strip comments
     source = source.gsub(/(^[^#]*)#.*(\n|$)/, '\1')
     # Strips the source of any characters that aren't brackets or part of debug flags
@@ -42,6 +42,7 @@ class BrainFlakInterpreter
     @debug_flags = Hash.new{|h,k| h[k] = []}
     @last_op = :none
     @cycles = 0
+    @max_cycles = max_cycles
     left_in.each do|a|
       @left.push(a)
     end
@@ -177,6 +178,9 @@ class BrainFlakInterpreter
       return false
     end
     @cycles += 1
+    if @max_cycles >= 0 and @cycles >= @max_cycles then
+      raise BrainFlakError.new("Maximum cycles exceeded", @index + 1)
+    end
     current_symbol = @source[@index..@index+1] or @source[@index]
     if ['()', '[]', '{}', '<>'].include? current_symbol
       case current_symbol

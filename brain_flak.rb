@@ -12,6 +12,7 @@ ascii_in = false
 ascii_out = false
 reverse = false
 arg_path = ""
+max_cycles = -1
 
 parser = OptionParser.new do |opts|
   opts.banner = "\nBrain-Flak Ruby Interpreter\n"\
@@ -84,6 +85,12 @@ parser = OptionParser.new do |opts|
     STDERR.puts VERSION_STRING
     exit
   end
+
+  opts.on("-m", "--max-cycles=MAX", "Sets the maximum cycles.  If exceeded the program will terminate.") do |maximum|
+    #Can cause errors
+    max_cycles = maximum.to_i
+  end
+
 end
 
 begin
@@ -139,7 +146,7 @@ begin
     numbers.map!(&:ord)
   end
   numbers.reverse! if !reverse
-  interpreter = BrainFlakInterpreter.new(source, numbers, [], debug)
+  interpreter = BrainFlakInterpreter.new(source, numbers, [], debug, max_cycles)
 
   while interpreter.step
   end
