@@ -156,10 +156,15 @@ begin
   end
   if do_out then
     begin
-      interpreter.active_stack.print_stack(ascii_out, reverse)
+      #Output current state
+      if debug then
+        puts interpreter.debug_info_full(ascii_out)
+      else
+        interpreter.active_stack.print_stack(ascii_out, reverse)
+      end
     rescue BrainFlakError => e
       if e.pos == -1 then
-        #Catch an error from the stack, becuase the stack does not no where it is in the program
+        #Catch an error from the stack, becuase the stack does not know where it is in the program
         #We remove the beginning of the message (everything before ": ") and make a new error 
         #with the location being the end of the program
         raise BrainFlakError.new(e.message.split(": ")[1..-1].join(": "), source_length)

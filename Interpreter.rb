@@ -73,6 +73,35 @@ class BrainFlakInterpreter
     end
   end
 
+  def debug_info_full(ascii_mode)
+    builder = ""
+    if ascii_mode then
+      limit=2**32
+      builder += @active_stack == @left ? "^\n" : "  ^\n"
+      for i in 0..[@left.height,@right.height].max do
+        c_right = (@right.at(i) != nil ? @right.at(i) : 32)%limit
+        c_left  = (@left.at(i)  != nil ? @left.at(i)  : 32)%limit
+        builder = (c_left.chr(Encoding::UTF_8)).ljust(2) + c_right.chr(Encoding::UTF_8) + "\n" + builder
+      end
+    else
+      if @left.height > 0 then
+        max_left = @left.get_data.map { |item| item.to_s.length }.max
+      else
+        max_left = 1
+      end
+      for i in 0..[@left.height,@right.height].max do
+        builder = @left.at(i).to_s.ljust(max_left+1) + @right.at(i).to_s + "\n" + builder
+      end
+      if @active_stack == @left then
+        builder += "^\n"
+      else
+        builder += " "*(max_left+1) + "^\n"
+      end
+    end
+    builder = ("Cycles:\n%d\nProgram:\n" % @cycles) + inspect + "\nStack:" + builder
+    return builder
+  end
+
   def do_debug_flag(index)
     @debug_flags[index].each do |flag|
       STDERR.print "@%s " % flag.to_s
@@ -92,31 +121,8 @@ class BrainFlakInterpreter
         when "al" then STDERR.puts @left.char_inspect_array(2**32)
         when "dr" then STDERR.puts @right.inspect_array
         when "ar" then STDERR.puts @right.char_inspect_array(2**32)
-        when "df" then
-          builder = ""
-          if @left.height > 0 then
-            max_left = @left.get_data.map { |item| item.to_s.length}.max
-          else
-            max_left = 1
-          end
-          for i in 0..[@left.height,@right.height].max do
-            builder = @left.at(i).to_s.ljust(max_left+1) + @right.at(i).to_s + "\n" + builder
-          end
-          if @active_stack == @left then
-            builder += "^\n"
-          else
-            builder += " "*(max_left+1) + "^\n"
-          end
-          STDERR.puts builder
-        when "af" then
-          limit=2**32
-          builder = @active_stack == @left ? "^\n" : "  ^\n"
-          for i in 0..[@left.height,@right.height].max do
-            c_right = (@right.at(i) != nil ? @right.at(i) : 32)%limit
-            c_left  = (@left.at(i)  != nil ? @left.at(i)  : 32)%limit
-            builder = (c_left.chr(Encoding::UTF_8)).ljust(2) + c_right.chr(Encoding::UTF_8) + "\n" + builder
-          end
-          STDERR.puts builder
+        when "df" then STDERR.puts debug_info_full(false)
+        when "af" then STDERR.puts debug_info_full(true)
        when "cy" then STDERR.puts @cycles
        when "ij" then
          injection = $stdin.read
