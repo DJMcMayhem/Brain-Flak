@@ -13,6 +13,7 @@ ascii_out = false
 reverse = false
 arg_path = ""
 max_cycles = -1
+mode = "Brain-Flak"
 
 parser = OptionParser.new do |opts|
   opts.banner = "\nBrain-Flak Ruby Interpreter\n"\
@@ -47,6 +48,10 @@ parser = OptionParser.new do |opts|
 
   opts.on("-f", "--file=FILE", "Reads input for the brain-flak program from FILE, rather than from the command line.") do |file|
     arg_path = file
+  end
+
+  opts.on("-l","--language=LANGUAGE", "Changes the language to be interpreted.  Brain-Flak is the default but Miniflak and Brain-Flak-Classic are also options") do |lang|
+    mode = lang[0..-1]
   end
 
   opts.on("-a", "--ascii-in", "Take input in character code points and output in decimal. This overrides previous -A and -c flags.") do 

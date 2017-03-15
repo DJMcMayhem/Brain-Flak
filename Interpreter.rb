@@ -52,6 +52,50 @@ class BrainFlakInterpreter
     remove_debug_flags(debug)
     @running = @source.length > 0
     @run_debug = !@running && @debug_flags.size > 0
+    def round_nilad()
+      @current_value += 1
+    end
+    def square_nilad()
+      @current_value += @active_stack.height
+    end
+    def curly_nilad()
+      @current_value += @active_stack.pop
+    end
+    def angle_nilad()
+      @active_stack = @active_stack == @left ? @right : @left
+    end
+    def open_round()
+      @main_stack.push([current_symbol, @current_value, @index])
+      @current_value = 0
+    end
+    def open_square()
+      @main_stack.push([current_symbol, @current_value, @index])
+      @current_value = 0
+    end
+    def open_curly()
+      new_indes = read_until_matching(@source, @index)
+      rasie BrainFlakError.new("Unmatched '{' character", @index + 1) if new_index == nil
+      @index = new_index
+    end
+    def open_angle()
+      @main_stack.push([current_symbol, @current_value, @index])
+      @current_value = 0
+    end
+    def close_round()
+      @active_stack.push(@current_value)
+    end
+    def close_square()
+      @current_value *= -1
+    end
+    def close_curly()
+      if @active_stack.peek != 0 then
+        @index = data[2] - 1
+        @last_op = :close_curly
+      end
+    end
+    def close_angle()
+      @current_value = 0
+    end
   end
 
   def inactive_stack
