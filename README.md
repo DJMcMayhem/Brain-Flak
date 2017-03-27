@@ -4,7 +4,7 @@ Brain-Flak is an "Turing-tarpit", e.g. a language which can, *in theory* compute
 
 To get started with Brain-Flak, download the project from here, and run `ruby brain_flak.rb inputs`. Additionally, you can [try it online](http://brain-flak.tryitonline.net/)! (Online intrepreter provided thanks to [@DennisMitchell](https://github.com/DennisMitchell))
 
-#Tutorial
+# Tutorial
 
 Brain-Flak has two stacks, known as 'left' and 'right'. The active stack starts at left. If an empty stack is popped, it will return 0. That's it. No other variables. When the program starts, each command line argument is pushed on to the active stack.
 
@@ -48,7 +48,7 @@ When the program is done executing, each value left on the active stack is print
 
 That's it. That's the whole language. 
 
-#Sample code
+# Sample code
 
 Here are some full programs that do interesting things.
 
