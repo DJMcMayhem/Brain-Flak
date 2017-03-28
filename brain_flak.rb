@@ -13,7 +13,7 @@ ascii_out = false
 reverse = false
 arg_path = ""
 max_cycles = -1
-mode = "Brain-Flak"
+mode = "brainflak"
 
 parser = OptionParser.new do |opts|
   opts.banner = "\nBrain-Flak Ruby Interpreter\n"\
@@ -151,7 +151,7 @@ begin
     numbers.map!(&:ord)
   end
   numbers.reverse! if !reverse
-  interpreter = BrainFlakInterpreter.new(source, numbers, [], debug, max_cycles)
+  interpreter = BrainFlakInterpreter.new(source, numbers, [], debug, max_cycles, mode)
 
   while interpreter.step
   end
