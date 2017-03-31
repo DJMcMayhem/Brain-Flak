@@ -75,7 +75,7 @@ class BrainFlakInterpreter
         @current_value = 0
       end
       def open_curly()
-        new_indes = read_until_matching(@source, @index)
+        new_index = read_until_matching(@source, @index)
         rasie BrainFlakError.new("Unmatched '{' character", @index + 1) if new_index == nil
         @index = new_index
       end
