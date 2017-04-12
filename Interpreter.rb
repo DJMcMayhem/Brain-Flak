@@ -395,15 +395,22 @@ class BrainFlakInterpreter
         end
       end
     end
-    winWidth = IO.console.winsize[1]
-    if source.length <= winWidth then
-      return "%s\n%s" % [source, "^".rjust(index + 1)]
-    elsif index < winWidth/2 then
-      return "%s...\n%s" % [source[0..winWidth-4],"^".rjust(index + 1)]
-    elsif source.length - index < winWidth/2 then
-      return "...%s\n%s" % [source[-(winWidth-3)..-1],"^".rjust(winWidth-(source.length-index))]
-    else
-      return "...%s...\n%s" % [source[3+index-winWidth/2..winWidth/2+index-4],"^".rjust(winWidth/2+1)]
+    result = ""
+    begin
+      winWidth = IO.console.winsize[1]
+    rescue NoMethodError
+      #If no winsize can be found we default to 20
+      winWith = 20
     end
+    if source.length <= winWidth then
+      result += "%s\n%s" % [source, "^".rjust(index + 1)]
+    elsif index < winWidth/2 then
+      result += "%s...\n%s" % [source[0..winWidth-4],"^".rjust(index + 1)]
+    elsif source.length - index < winWidth/2 then
+      result += "...%s\n%s" % [source[-(winWidth-3)..-1],"^".rjust(winWidth-(source.length-index))]
+    else
+      result += "...%s...\n%s" % [source[3+index-winWidth/2..winWidth/2+index-4],"^".rjust(winWidth/2+1)]
+    end
+    return result + "\nChararacter %s" % [@index + 1]
   end
 end
