@@ -14,17 +14,18 @@ reverse = false
 arg_path = ""
 max_cycles = -1
 mode = "brainflak"
+from_file = true
 
 parser = OptionParser.new do |opts|
   opts.banner = "\nBrain-Flak Ruby Interpreter\n"\
                 "Usage:\n"\
                 "\tbrain_flak [options] source_file args...\n\n"
 
-  opts.on("-d", "--debug", "Enables parsing of debug commands") do
+  opts.on("-d", "--debug", "Enables parsing of debug commands.") do
     debug = true
   end
 
-  opts.on("-H", "--help-debug", "Prints a list of debug flags and what they do") do
+  opts.on("-H", "--help-debug", "Prints a list of debug flags and what they do.") do
     flag_desc= [
       ["ac","Prints the current stack as ASCII characters"],
       ["al","Prints the left stack as ASCII characters"],
@@ -50,7 +51,7 @@ parser = OptionParser.new do |opts|
     arg_path = file
   end
 
-  opts.on("-l","--language=LANGUAGE", "Changes the language to be interpreted.  Brain-Flak is the default but Miniflak and Brain-Flak-Classic are also options") do |lang|
+  opts.on("-l","--language=LANGUAGE", "Changes the language to be interpreted.  Brain-Flak is the default but Miniflak and Brain-Flak-Classic are also options.") do |lang|
     mode = lang[0..-1]
   end
 
@@ -69,11 +70,11 @@ parser = OptionParser.new do |opts|
     ascii_out = true
   end
 
-  opts.on("-n","--no-in", "Input is ignored") do
+  opts.on("-n","--no-in", "Input is ignored.") do
     do_in = false
   end
 
-  opts.on("-N","--no-out", "No output is produced.  Debug flags and error messages still appear") do
+  opts.on("-N","--no-out", "No output is produced.  Debug flags and error messages still appear.") do
     do_out = false
   end
 
@@ -81,12 +82,12 @@ parser = OptionParser.new do |opts|
     reverse = true
   end
 
-  opts.on("-h", "--help", "Prints info on the command line usage of Brain-Flak and then exits") do
+  opts.on("-h", "--help", "Prints info on the command line usage of Brain-Flak and then exits.") do
     STDERR.puts opts
     exit
   end
 
-  opts.on("-v", "--version", "Prints the version of the Brain-Flak interpreter and then exits") do
+  opts.on("-v", "--version", "Prints the version of the Brain-Flak interpreter and then exits.") do
     STDERR.puts VERSION_STRING
     exit
   end
@@ -94,6 +95,10 @@ parser = OptionParser.new do |opts|
   opts.on("-m", "--max-cycles=MAX", "Sets the maximum cycles.  If exceeded the program will terminate.") do |maximum|
     #Can cause errors
     max_cycles = maximum.to_i
+  end
+
+  opts.on("-e", "--execute", "Executes the first command line argument as Brain-Flak code.") do
+    from_file = false
   end
 
 end
@@ -137,9 +142,13 @@ if debug then
   STDERR.puts "Debug mode... ENGAGED!"
 end
 
-source_file = File.open(source_path, 'r')
-source = source_file.read
-source_length = source.length
+if from_file then
+  source_file = File.open(source_path, 'r')
+  source = source_file.read
+  source_length = source.length
+else
+  source = source_path      # contains ARGV[0]
+end
 
 begin
   if !ascii_in
