@@ -1,5 +1,7 @@
 require_relative './stack.rb'
-require_relative './Interpreter.rb'
+require_relative './BrainFlakInterpreter.rb'
+require_relative './ClassicInterpreter.rb'
+require_relative './MiniFlakInterpreter.rb'
 
 VERSION_STRING =  "Brain-Flak Ruby Interpreter v1.3.1-dev"
 
@@ -160,8 +162,14 @@ begin
     numbers.map!(&:ord)
   end
   numbers.reverse! if !reverse
-  interpreter = BrainFlakInterpreter.new(source, numbers, [], debug, max_cycles, mode)
-
+  case mode
+  when "brainflak"
+    interpreter = BrainFlakInterpreter.new(source, numbers, [], debug, max_cycles)
+  when "classic"
+    interpreter = ClassicInterpreter.new(source, numbers, [], debug, max_cycles)
+  when "miniflak"
+    interpreter = MiniFlakInterpreter.new(source, numbers, [], debug, max_cycles)
+  end
   while interpreter.step
   end
   if interpreter.main_stack.length > 0

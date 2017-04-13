@@ -18,12 +18,12 @@ def read_until_matching(s, start)
   return nil
 end
 
-class BrainFlakInterpreter
+class Interpreter
 
   attr_accessor :current_value, :active_stack
   attr_reader :running, :left, :right, :main_stack
 
-  def initialize(source, left_in, right_in, debug, max_cycles, mode)
+  def initialize(source, left_in, right_in, debug, max_cycles)
     # Strip comments
     source = source.gsub(/(^[^#]*)#.*(\n|$)/, '\1')
     # Strips the source of any characters that aren't brackets or part of debug flags
@@ -52,142 +52,6 @@ class BrainFlakInterpreter
     remove_debug_flags(debug)
     @running = @source.length > 0
     @run_debug = !@running && @debug_flags.size > 0
-    case mode
-    when "brainflak" then
-      def round_nilad()
-        @current_value += 1
-      end
-      def square_nilad()
-        @current_value += @active_stack.height
-      end
-      def curly_nilad()
-        @current_value += @active_stack.pop
-      end
-      def angle_nilad()
-        @active_stack = @active_stack == @left ? @right : @left
-      end
-      def open_round()
-        @main_stack.push(['(', @current_value, @index])
-        @current_value = 0
-      end
-      def open_square()
-        @main_stack.push(['[', @current_value, @index])
-        @current_value = 0
-      end
-      def open_curly()
-        new_index = read_until_matching(@source, @index)
-        rasie BrainFlakError.new("Unmatched '{' character", @index + 1) if new_index == nil
-        @index = new_index
-      end
-      def open_angle()
-        @main_stack.push(['<', @current_value, @index])
-        @current_value = 0
-      end
-      def close_round()
-        @active_stack.push(@current_value)
-      end
-      def close_square()
-        @current_value *= -1
-      end
-      def close_curly()
-        if @active_stack.peek != 0 then
-          @index = data[2] - 1
-          @last_op = :close_curly
-        end
-      end
-      def close_angle()
-        @current_value = 0
-      end
-    when "miniflak" then
-      def round_nilad()
-        @current_value += 1
-      end
-      def square_nilad()
-        @current_value += @active_stack.height
-      end
-      def curly_nilad()
-        @current_value += @active_stack.pop
-      end
-      def angle_nilad()
-            raise BrainFlakError.new("<> is not defined in Miniflak.", @index + 1)
-      end
-      def open_round()
-        @main_stack.push(['(', @current_value, @index])
-        @current_value = 0
-      end
-      def open_square()
-        @main_stack.push(['[', @current_value, @index])
-        @current_value = 0
-      end
-      def open_curly()
-        new_indes = read_until_matching(@source, @index)
-        rasie BrainFlakError.new("Unmatched '{' character", @index + 1) if new_index == nil
-        @index = new_index
-      end
-      def open_angle()
-            raise BrainFlakError.new("< is not defined in Miniflak.", @index + 1)
-      end
-      def close_round()
-        @active_stack.push(@current_value)
-      end
-      def close_square()
-        @current_value *= -1
-      end
-      def close_curly()
-        if @active_stack.peek != 0 then
-          @index = data[2] - 1
-          @last_op = :close_curly
-        end
-      end
-      def close_angle()
-            raise BrainFlakError.new("> is not defined in Miniflak.", @index + 1)
-      end
-    when "classic" then
-      def round_nilad()
-        @current_value += 1
-      end
-      def square_nilad()
-        @current_value -= 1
-      end
-      def curly_nilad()
-        @current_value += @active_stack.pop
-      end
-      def angle_nilad()
-        @active_stack = @active_stack == @left ? @right : @left
-      end
-      def open_round()
-        @main_stack.push(['(', @current_value, @index])
-        @current_value = 0
-      end
-      def open_square()
-        @main_stack.push(['[', @current_value, @index])
-        @current_value = 0
-      end
-      def open_curly()
-        new_indes = read_until_matching(@source, @index)
-        rasie BrainFlakError.new("Unmatched '{' character", @index + 1) if new_index == nil
-        @index = new_index
-      end
-      def open_angle()
-        @main_stack.push(['<', @current_value, @index])
-        @current_value = 0
-      end
-      def close_round()
-        @active_stack.push(@current_value)
-      end
-      def close_square()
-        puts @current_value
-      end
-      def close_curly()
-        if @active_stack.peek != 0 then
-          @index = data[2] - 1
-          @last_op = :close_curly
-        end
-      end
-      def close_angle()
-        @current_value = 0
-      end
-    end
   end
 
   def inactive_stack
@@ -345,10 +209,6 @@ class BrainFlakInterpreter
         end
 
       elsif is_closing_bracket?(current_symbol) then
-        data = @main_stack.pop
-        raise BrainFlakError.new("Unmatched '" + current_symbol + "' character", @index + 1) if data == nil
-        #Here I use @source[@index] I am not sure why but @current symbol always yields nothing
-        raise BrainFlakError.new("Expected to close '%s' from location %d but instead encountered '%s' " % [data[0] , data[2] + 1, @source[@index]], @index + 1) if not brackets_match?(data[0], current_symbol)
 
         case current_symbol
           when ')' then close_round()
@@ -356,7 +216,6 @@ class BrainFlakInterpreter
           when '>' then close_angle()
           when '}' then close_curly()
         end
-        @current_value += data[1]
       else raise BrainFlakError.new("Invalid character '%s'." % current_symbol, @index + 1)
       end
       @index += 1
