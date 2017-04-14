@@ -1,7 +1,7 @@
 require_relative './stack.rb'
 require_relative './Interpreter.rb'
 
-VERSION_STRING =  "Brain-Flak Ruby Interpreter v1.3.0"
+VERSION_STRING =  "Brain-Flak Ruby Interpreter v1.3.1"
 
 require 'optparse'
 
@@ -30,11 +30,13 @@ parser = OptionParser.new do |opts|
       ["ar","Prints the right stack as ASCII characters"],
       ["cy","Prints the number of elapsed cycles"],
       ["dc","Prints the current stack in decimal"],
+      ["dh","Prints the height of the current stack in decimal"],
       ["dl","Prints the left stack in decimal"],
       ["dv","Prints the current value of the scope in decimal"],
       ["dr","Prints the right stack in decimal"],
       ["ex","Terminates the program"],
       ["ij","Pauses program and prompts user for Brain-Flak code to be run in place of the flag"],
+      ["lt","Passed with a number after the @lt (e.g. @lt6).  Evaluates to the number passed with it"],
       ["pu","Pauses the program until the user hits the return key"],
     ]    
     flag_desc.each do | flag |
@@ -43,7 +45,6 @@ parser = OptionParser.new do |opts|
   end
 
   opts.on("-f", "--file=FILE", "Reads input for the brain-flak program from FILE, rather than from the command line.") do |file|
-    puts file
     arg_path = file
   end
 

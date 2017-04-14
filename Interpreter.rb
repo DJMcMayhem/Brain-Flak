@@ -80,7 +80,7 @@ class BrainFlakInterpreter
         when "av" then STDERR.puts (@current_value%256).chr(Encoding::UTF_8)
         when "uv" then STDERR.puts (@current_value%2**32).chr(Encoding::UTF_8)
         when "dc","ac" then
-          print @active_stack == @left ? "(left) " : "(right) "
+          STDERR.print @active_stack == @left ? "(left) " : "(right) "
           case flag.to_s
             when "dc" then
               STDERR.puts @active_stack.inspect_array
@@ -146,7 +146,7 @@ class BrainFlakInterpreter
          @current_value = sub_interpreter.current_value
       when "dh" then STDERR.puts @active_stack.height
       when "lt" then 
-        print "\n"
+        STDERR.print "\n"
         @current_value += flag.get_data
       when "pu" then
         #Take input
@@ -247,11 +247,11 @@ class BrainFlakInterpreter
     index = @index
     offset = 0
     @debug_flags.each_pair do |k,v|
-      v.each do |sym|
-        source.insert(k + offset, "#%s" % sym.id2name);
-        offset += sym.id2name.length + 1
+      v.each do |flag|
+        source.insert(k + offset, "@%s" % flag.to_s);
+        offset += flag.to_s.length + 1
         if k <= index then
-          index += sym.id2name.length + 1
+          index += flag.to_s.length + 1
         end
       end
     end
