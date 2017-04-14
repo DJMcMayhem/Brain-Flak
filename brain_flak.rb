@@ -1,7 +1,7 @@
 require_relative './stack.rb'
 require_relative './Interpreter.rb'
 
-VERSION_STRING =  "Brain-Flak Ruby Interpreter v1.3.1-dev"
+VERSION_STRING =  "Brain-Flak Ruby Interpreter v1.3.1"
 
 require 'optparse'
 
