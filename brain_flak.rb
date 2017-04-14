@@ -172,6 +172,8 @@ begin
     interpreter = MiniFlakInterpreter.new(source, numbers, [], debug, max_cycles)
   when "brainflueue"
     interpreter = BrainFlueueInterpreter.new(source, numbers, [], debug, max_cycles)
+  else 
+    raise BrainFlakError.new("No language called '%s'." % mode, 0)
   end
   while interpreter.step
   end

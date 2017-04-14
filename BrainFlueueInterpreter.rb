@@ -37,7 +37,7 @@ class BrainFlueueInterpreter < Interpreter
   end
 
   def open_curly()
-    @main_stack.push(['{', @current_value, @index])
+    @main_stack.push(['{', 0, @index])
     new_index = read_until_matching(@source, @index)
     rasie BrainFlakError.new("Unmatched '{' character", @index + 1) if new_index == nil
     if not active_stack.data.first then
