@@ -1,5 +1,6 @@
 require_relative './stack.rb'
 require_relative './BrainFlakInterpreter.rb'
+require_relative './BrainFlueueInterpreter.rb'
 require_relative './ClassicInterpreter.rb'
 require_relative './MiniFlakInterpreter.rb'
 
@@ -169,6 +170,8 @@ begin
     interpreter = ClassicInterpreter.new(source, numbers, [], debug, max_cycles)
   when "miniflak"
     interpreter = MiniFlakInterpreter.new(source, numbers, [], debug, max_cycles)
+  when "brainflueue"
+    interpreter = BrainFlueueInterpreter.new(source, numbers, [], debug, max_cycles)
   end
   while interpreter.step
   end
