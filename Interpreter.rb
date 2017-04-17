@@ -18,12 +18,12 @@ def read_until_matching(s, start)
   return nil
 end
 
-class BrainFlakInterpreter
+class Interpreter
 
   attr_accessor :current_value, :active_stack
   attr_reader :running, :left, :right, :main_stack
 
-  def initialize(source, left_in, right_in, debug)
+  def initialize(source, left_in, right_in, debug, max_cycles)
     # Strip comments
     source = source.gsub(/(^[^#]*)#.*(\n|$)/, '\1')
     # Strips the source of any characters that aren't brackets or part of debug flags
@@ -42,6 +42,7 @@ class BrainFlakInterpreter
     @debug_flags = Hash.new{|h,k| h[k] = []}
     @last_op = :none
     @cycles = 0
+    @max_cycles = max_cycles
     left_in.each do|a|
       @left.push(a)
     end
@@ -72,6 +73,35 @@ class BrainFlakInterpreter
     end
   end
 
+  def debug_info_full(ascii_mode)
+    builder = ""
+    if ascii_mode then
+      limit=2**32
+      builder += @active_stack == @left ? "^\n" : "  ^\n"
+      for i in 0..[@left.height,@right.height].max do
+        c_right = (@right.at(i) != nil ? @right.at(i) : 32)%limit
+        c_left  = (@left.at(i)  != nil ? @left.at(i)  : 32)%limit
+        builder = (c_left.chr(Encoding::UTF_8)).ljust(2) + c_right.chr(Encoding::UTF_8) + "\n" + builder
+      end
+    else
+      if @left.height > 0 then
+        max_left = @left.get_data.map { |item| item.to_s.length }.max
+      else
+        max_left = 1
+      end
+      for i in 0..[@left.height,@right.height].max do
+        builder = @left.at(i).to_s.ljust(max_left+1) + @right.at(i).to_s + "\n" + builder
+      end
+      if @active_stack == @left then
+        builder += "^\n"
+      else
+        builder += " "*(max_left+1) + "^\n"
+      end
+    end
+    builder = ("Cycles:\n%d\nProgram:\n" % @cycles) + inspect + "\nStack:" + builder
+    return builder
+  end
+
   def do_debug_flag(index)
     @debug_flags[index].each do |flag|
       STDERR.print "@%s " % flag.to_s
@@ -91,31 +121,8 @@ class BrainFlakInterpreter
         when "al" then STDERR.puts @left.char_inspect_array(2**32)
         when "dr" then STDERR.puts @right.inspect_array
         when "ar" then STDERR.puts @right.char_inspect_array(2**32)
-        when "df" then
-          builder = ""
-          if @left.height > 0 then
-            max_left = @left.get_data.map { |item| item.to_s.length}.max
-          else
-            max_left = 1
-          end
-          for i in 0..[@left.height,@right.height].max do
-            builder = @left.at(i).to_s.ljust(max_left+1) + @right.at(i).to_s + "\n" + builder
-          end
-          if @active_stack == @left then
-            builder += "^\n"
-          else
-            builder += " "*(max_left+1) + "^\n"
-          end
-          STDERR.puts builder
-        when "af" then
-          limit=2**32
-          builder = @active_stack == @left ? "^\n" : "  ^\n"
-          for i in 0..[@left.height,@right.height].max do
-            c_right = (@right.at(i) != nil ? @right.at(i) : 32)%limit
-            c_left  = (@left.at(i)  != nil ? @left.at(i)  : 32)%limit
-            builder = (c_left.chr(Encoding::UTF_8)).ljust(2) + c_right.chr(Encoding::UTF_8) + "\n" + builder
-          end
-          STDERR.puts builder
+        when "df" then STDERR.puts debug_info_full(false)
+        when "af" then STDERR.puts debug_info_full(true)
        when "cy" then STDERR.puts @cycles
        when "ij" then
          injection = $stdin.read
@@ -177,13 +184,16 @@ class BrainFlakInterpreter
       return false
     end
     @cycles += 1
+    if @max_cycles >= 0 and @cycles >= @max_cycles then
+      raise BrainFlakError.new("Maximum cycles exceeded", @index + 1)
+    end
     current_symbol = @source[@index..@index+1] or @source[@index]
     if ['()', '[]', '{}', '<>'].include? current_symbol
       case current_symbol
-        when '()' then @current_value += 1
-        when '[]' then @current_value += @active_stack.height
-        when '{}' then @current_value += @active_stack.pop
-        when '<>' then @active_stack = @active_stack == @left ? @right : @left
+        when '()' then round_nilad()
+        when '[]' then square_nilad()
+        when '{}' then curly_nilad()
+        when '<>' then angle_nilad()
       end
       @last_op = :nilad
       @index += 2
@@ -191,32 +201,21 @@ class BrainFlakInterpreter
       @last_op = :monad
       current_symbol = current_symbol[0]
       if is_opening_bracket?(current_symbol) then
-        if current_symbol == '{' and @active_stack.peek == 0 then
-          new_index = read_until_matching(@source, @index)
-          raise BrainFlakError.new("Unmatched '{' character", @index + 1) if new_index == nil
-          @index = new_index
-        else
-          @main_stack.push([current_symbol, @current_value, @index])
-          @current_value = 0
+        case current_symbol
+          when '(' then open_round()
+          when '[' then open_square()
+          when '<' then open_angle()
+          when '{' then open_curly()
         end
 
       elsif is_closing_bracket?(current_symbol) then
-        data = @main_stack.pop
-        raise BrainFlakError.new("Unmatched '" + current_symbol + "' character", @index + 1) if data == nil
-        #Here I use @source[@index] I am not sure why but @current symbol always yields nothing
-        raise BrainFlakError.new("Expected to close '%s' from location %d but instead encountered '%s' " % [data[0] , data[2] + 1, @source[@index]], @index + 1) if not brackets_match?(data[0], current_symbol)
 
         case current_symbol
-          when ')' then @active_stack.push(@current_value)
-          when ']' then @current_value *= -1
-          when '>' then @current_value = 0
-          when '}'
-            if @active_stack.peek != 0 then
-              @index = data[2] - 1
-              @last_op = :close_curly
-            end
+          when ')' then close_round()
+          when ']' then close_square()
+          when '>' then close_angle()
+          when '}' then close_curly()
         end
-        @current_value += data[1]
       else raise BrainFlakError.new("Invalid character '%s'." % current_symbol, @index + 1)
       end
       @index += 1
@@ -255,15 +254,22 @@ class BrainFlakInterpreter
         end
       end
     end
-    winWidth = IO.console.winsize[1]
-    if source.length <= winWidth then
-      return "%s\n%s" % [source, "^".rjust(index + 1)]
-    elsif index < winWidth/2 then
-      return "%s...\n%s" % [source[0..winWidth-4],"^".rjust(index + 1)]
-    elsif source.length - index < winWidth/2 then
-      return "...%s\n%s" % [source[-(winWidth-3)..-1],"^".rjust(winWidth-(source.length-index))]
-    else
-      return "...%s...\n%s" % [source[3+index-winWidth/2..winWidth/2+index-4],"^".rjust(winWidth/2+1)]
+    result = ""
+    begin
+      winWidth = IO.console.winsize[1]
+    rescue NoMethodError
+      #If no winsize can be found we default to 20
+      winWith = 20
     end
+    if source.length <= winWidth then
+      result += "%s\n%s" % [source, "^".rjust(index + 1)]
+    elsif index < winWidth/2 then
+      result += "%s...\n%s" % [source[0..winWidth-4],"^".rjust(index + 1)]
+    elsif source.length - index < winWidth/2 then
+      result += "...%s\n%s" % [source[-(winWidth-3)..-1],"^".rjust(winWidth-(source.length-index))]
+    else
+      result += "...%s...\n%s" % [source[3+index-winWidth/2..winWidth/2+index-4],"^".rjust(winWidth/2+1)]
+    end
+    return result + "\nChararacter %s" % [@index + 1]
   end
 end
