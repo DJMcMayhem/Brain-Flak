@@ -30,8 +30,9 @@ class Stack
         begin
           print (value % 2 ** 32).chr(Encoding::UTF_8)
         rescue RangeError => ex
-          #Error at character 0 is probably not right but I can't access the proper location from here
-          raise BrainFlakError.new("Value #{value} is out of range for UTF_8 encoding.",0)
+          #Error at character -1 signals to the main level to insert the current location because stack doesn't know 
+          #where we are in the execution.  -1 cannot be attained any other way.
+          raise BrainFlakError.new("Value #{value} is out of range for UTF_8 encoding.",-1)
         end
       else
         print value.to_s + "\n"
