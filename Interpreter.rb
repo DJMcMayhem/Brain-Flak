@@ -29,7 +29,7 @@ class Interpreter
     # Strips the source of any characters that aren't brackets or part of debug flags
     @source = source.gsub(/(?<=^|[()\[\]<>{}]|\s)[^@()\[\]<>{}]*/, "")
     # Strips extra @s
-    @source = @source.gsub(/@+(?=[()\[\]<>{}])/, "")
+    @source = @source.gsub(/@+(?=[()\[\]<>{}$])/, "")
     # Strips extra whitespace
     @source = @source.gsub(/\s/,"")
     @left = Stack.new('Left')
