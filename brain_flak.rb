@@ -4,7 +4,7 @@ require_relative './BrainFlueueInterpreter.rb'
 require_relative './ClassicInterpreter.rb'
 require_relative './MiniFlakInterpreter.rb'
 
-VERSION_STRING =  "Brain-Flak Ruby Interpreter v1.3.1"
+VERSION_STRING =  "Brain-Flak Ruby Interpreter v1.4.0"
 
 require 'optparse'
 
