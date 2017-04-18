@@ -39,8 +39,9 @@ class ClassicInterpreter < Interpreter
   def open_curly()
     @main_stack.push(['{', 0, @index])
     new_index = read_until_matching(@source, @index)
-    rasie BrainFlakError.new("Unmatched '{' character", @index + 1) if new_index == nil
+    raise BrainFlakError.new("Unmatched '{' character", @index + 1) if new_index == nil
     if active_stack.peek == 0 then
+      @main_stack.pop()
       @index = new_index
     end
   end
