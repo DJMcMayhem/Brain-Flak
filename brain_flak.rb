@@ -54,8 +54,8 @@ parser = OptionParser.new do |opts|
     arg_path = file
   end
 
-  opts.on("-l","--language=LANGUAGE", "Changes the language to be interpreted.  Brain-Flak is the default but Miniflak and Brain-Flak-Classic are also options.") do |lang|
-    mode = lang[0..-1]
+  opts.on("-l","--language=LANGUAGE", "Changes the language to be interpreted.  Brain-Flak is the default but Miniflak, Brain-Flueue and Brain-Flak-Classic are also options.") do |lang|
+    mode = lang[0..-1].downcase.gsub("-fl","fl")
   end
 
   opts.on("-a", "--ascii-in", "Take input in character code points and output in decimal. This overrides previous -A and -c flags.") do 
