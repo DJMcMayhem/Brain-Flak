@@ -4,7 +4,7 @@ require_relative './BrainFlueueInterpreter.rb'
 require_relative './ClassicInterpreter.rb'
 require_relative './MiniFlakInterpreter.rb'
 
-VERSION_STRING =  "Brain-Flak Ruby Interpreter v1.4.1"
+VERSION_STRING =  "Brain-Flak Ruby Interpreter v1.4.2"
 
 require 'optparse'
 
@@ -55,7 +55,7 @@ parser = OptionParser.new do |opts|
   end
 
   opts.on("-l","--language=LANGUAGE", "Changes the language to be interpreted.  Brain-Flak is the default but Miniflak, Brain-Flueue and Brain-Flak-Classic are also options.") do |lang|
-    mode = lang[0..-1].downcase.gsub("-fl","fl")
+    mode = lang[0..-1].downcase.strip.gsub("-fl","fl")
   end
 
   opts.on("-a", "--ascii-in", "Take input in character code points and output in decimal. This overrides previous -A and -c flags.") do 
