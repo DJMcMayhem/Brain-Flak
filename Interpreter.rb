@@ -259,7 +259,7 @@ class Interpreter
       winWidth = IO.console.winsize[1]
     rescue NoMethodError
       #If no winsize can be found we default to 20
-      winWitdh = 20
+      winWidth = 20
     end
     if source.length <= winWidth then
       result += "%s\n%s" % [source, "^".rjust(index + 1)]
