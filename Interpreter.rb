@@ -270,6 +270,6 @@ class Interpreter
     else
       result += "...%s...\n%s" % [source[3+index-winWidth/2..winWidth/2+index-4],"^".rjust(winWidth/2+1)]
     end
-    return result + "\nChararacter %s" % [@index + 1]
+    return result + "\nCharacter %s" % [@index + 1]
   end
 end
