@@ -3,8 +3,9 @@ require_relative './BrainFlakInterpreter.rb'
 require_relative './BrainFlueueInterpreter.rb'
 require_relative './ClassicInterpreter.rb'
 require_relative './MiniFlakInterpreter.rb'
+require_relative './BraceCheck.rb'
 
-VERSION_STRING =  "Brain-Flak Ruby Interpreter v1.4.2"
+VERSION_STRING =  "Brain-Flak Ruby Interpreter v1.5.0-dev"
 
 require 'optparse'
 
@@ -163,6 +164,10 @@ begin
     numbers.map!(&:ord)
   end
   numbers.reverse! if !reverse
+
+  #Check the braces are matched
+  braceCheck(source)
+
   case mode
   when "brainflak"
     interpreter = BrainFlakInterpreter.new(source, numbers, [], debug, max_cycles)
