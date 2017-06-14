@@ -66,7 +66,7 @@ class BrainFlueueInterpreter < Interpreter
 
   def close_curly()
     data = @main_stack.pop()
-    if @active_stack.data.first then
+    if @active_stack.peek != 0 then
       @index = data[2] - 1
       @last_op = :close_curly
     end
