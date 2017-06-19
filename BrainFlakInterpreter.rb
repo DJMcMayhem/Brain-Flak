@@ -7,7 +7,7 @@ require_relative './Interpreter.rb'
 class BrainFlakInterpreter < Interpreter
 
   # Nilads ~~~~~~~~~~~~~~~~~~~~~
- 
+	 
   def round_nilad()
     @current_value += 1
   end
@@ -42,6 +42,7 @@ class BrainFlakInterpreter < Interpreter
     if active_stack.peek == 0 then
       @main_stack.pop()
       @index = new_index
+      @cycles += 1
     end
   end
 
@@ -66,10 +67,8 @@ class BrainFlakInterpreter < Interpreter
 
   def close_curly()
     data = @main_stack.pop()
-    if @active_stack.peek != 0 then
-      @index = data[2] - 1
-      @last_op = :close_curly
-    end
+    @index = data[2] - 1
+    @last_op = :close_curly
     @current_value += data[1]
   end
 

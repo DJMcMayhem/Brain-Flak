@@ -65,11 +65,9 @@ class ClassicInterpreter < Interpreter
   end
 
   def close_curly()
-    data = main_stack.pop()
-    if @active_stack.peek != 0 then
-      @index = data[2] - 1
-      @last_op = :close_curly
-    end
+    data = @main_stack.pop()
+    @index = data[2] - 1
+    @last_op = :close_curly
     @current_value += data[1]
   end
 
