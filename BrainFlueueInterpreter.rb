@@ -39,7 +39,7 @@ class BrainFlueueInterpreter < Interpreter
   def open_curly()
     @main_stack.push(['{', 0, @index])
     new_index = read_until_matching(@source, @index)
-    if not active_stack.data.first then
+    if active_stack.data.first == 0 or active_stack.data.first == nil then
       @main_stack.pop()
       @index = new_index
     end
