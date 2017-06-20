@@ -7,7 +7,7 @@ require_relative './Interpreter.rb'
 class BrainFlakInterpreter < Interpreter
 
   # Nilads ~~~~~~~~~~~~~~~~~~~~~
- 
+	 
   def round_nilad()
     @current_value += 1
   end
@@ -39,10 +39,10 @@ class BrainFlakInterpreter < Interpreter
   def open_curly()
     @main_stack.push(['{', 0, @index])
     new_index = read_until_matching(@source, @index)
-    raise BrainFlakError.new("Unmatched '{' character", @index + 1) if new_index == nil
     if active_stack.peek == 0 then
       @main_stack.pop()
       @index = new_index
+      @cycles += 1
     end
   end
 
@@ -55,36 +55,25 @@ class BrainFlakInterpreter < Interpreter
 
   def close_round()
     data = @main_stack.pop()
-    raise BrainFlakError.new("Unmatched '" + @source[@index] + "' character", @index + 1) if data == nil
-    raise BrainFlakError.new("Expected to close '%s' from location %d but instead encountered '%s' " % [data[0] , data[2] + 1, @source[@index]], @index + 1) if not brackets_match?(data[0], @source[@index])
     @active_stack.push(@current_value)
     @current_value += data[1]
   end
 
   def close_square()
     data = @main_stack.pop()
-    raise BrainFlakError.new("Unmatched '" + @source[@index] + "' character", @index + 1) if data == nil
-    raise BrainFlakError.new("Expected to close '%s' from location %d but instead encountered '%s' " % [data[0] , data[2] + 1, @source[@index]], @index + 1) if not brackets_match?(data[0], @source[@index])
     @current_value *= -1
     @current_value += data[1]
   end
 
   def close_curly()
     data = @main_stack.pop()
-    raise BrainFlakError.new("Unmatched '" + @source[@index] + "' character", @index + 1) if data == nil
-    raise BrainFlakError.new("Expected to close '%s' from location %d but instead encountered '%s' " % [data[0] , data[2] + 1, @source[@index]], @index + 1) if not brackets_match?(data[0], @source[@index])
-    if @active_stack.peek != 0 then
-      @index = data[2] - 1
-      @last_op = :close_curly
-    end
+    @index = data[2] - 1
+    @last_op = :close_curly
     @current_value += data[1]
   end
 
   def close_angle()
     data = @main_stack.pop()
-    raise BrainFlakError.new("Unmatched '" + @source[@index] + "' character", @index + 1) if data == nil
-    #Here I use @source[@index] I am not sure why but @current symbol always yields nothing
-    raise BrainFlakError.new("Expected to close '%s' from location %d but instead encountered '%s' " % [data[0] , data[2] + 1, @source[@index]], @index + 1) if not brackets_match?(data[0], @source[@index])
     @current_value = data[1]
   end
 
