@@ -5,7 +5,7 @@ require_relative './ClassicInterpreter.rb'
 require_relative './MiniFlakInterpreter.rb'
 require_relative './BraceCheck.rb'
 
-VERSION_STRING =  "Brain-Flak Ruby Interpreter v1.5.0-dev"
+VERSION_STRING =  "Brain-Flak Ruby Interpreter v1.5.0"
 
 require 'optparse'
 
