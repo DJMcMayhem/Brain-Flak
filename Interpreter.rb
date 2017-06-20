@@ -27,11 +27,11 @@ class Interpreter
     # Strip comments
     source = source.gsub(/(^[^#]*)#.*(\n|$)/, '\1')
     # Strips the source of any characters that aren't brackets or part of debug flags
-    @source = source.gsub(/(?<=^|[()\[\]<>{}]|\s)[^@()\[\]<>{}]*/, "")
-    # Strips extra @s
-    @source = @source.gsub(/@+(?=[()\[\]<>{}$])/, "")
+    @source = source.gsub(/(?<=^|[()\[\]<>{}]|\s)[^@()\[\]<>{}\s]*/, "")
     # Strips extra whitespace
     @source = @source.gsub(/\s/,"")
+    # Strips extra @s
+    @source = @source.gsub(/@+(?=[()\[\]<>{}]|$)/, "")
     @left = Stack.new('Left')
     @right = Stack.new('Right')
     @main_stack = []
@@ -259,7 +259,7 @@ class Interpreter
       winWidth = IO.console.winsize[1]
     rescue NoMethodError
       #If no winsize can be found we default to 20
-      winWitdh = 20
+      winWidth = 20
     end
     if source.length <= winWidth then
       result += "%s\n%s" % [source, "^".rjust(index + 1)]
@@ -270,6 +270,6 @@ class Interpreter
     else
       result += "...%s...\n%s" % [source[3+index-winWidth/2..winWidth/2+index-4],"^".rjust(winWidth/2+1)]
     end
-    return result + "\nChararacter %s" % [@index + 1]
+    return result + "\nCharacter %s" % [@index + 1]
   end
 end

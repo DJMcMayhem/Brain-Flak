@@ -83,8 +83,4 @@ def is_closing_bracket?(b)
   end
 end
 
-def brackets_match?(b1, b2)
-  s = [b1, b2].join('')
-  return ['()', '[]', '{}', '<>'].include? s
-end
 
