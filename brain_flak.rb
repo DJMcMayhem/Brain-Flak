@@ -173,8 +173,10 @@ begin
   when "classic"
     interpreter = ClassicInterpreter.new(source, numbers, [], debug, max_cycles)
   when "miniflak"
-    newsource = source.gsub(/#.*\n/,"").gsub(/[^<>\[\]{}()]/,"").gsub("<","").gsub(">","").gsub("[]","")
-    interpreter = BrainFlakInterpreter.new(newsource, numbers, [], debug, max_cycles)
+    while source =~ /\[\]/
+      source = source.gsub(/#.*\n/,"").gsub(/[^<>\[\]{}()]/,"").gsub("<","").gsub(">","").gsub("[]","")
+    end
+    interpreter = BrainFlakInterpreter.new(source, numbers, [], debug, max_cycles)
   when "brainflueue"
     interpreter = BrainFlueueInterpreter.new(source, numbers, [], debug, max_cycles)
   when "flueue"
