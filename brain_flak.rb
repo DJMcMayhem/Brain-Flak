@@ -175,7 +175,6 @@ begin
     interpreter = ClassicInterpreter.new(source, numbers, [], debug, max_cycles)
   when "miniflak"
     newsource = source.gsub(/#.*\n/,"").gsub(/[^<>\[\]{}()]/,"").gsub("<","").gsub(">","").gsub("[]","")
-    puts newsource
     interpreter = MiniFlakInterpreter.new(newsource, numbers, [], debug, max_cycles)
   when "brainflueue"
     interpreter = BrainFlueueInterpreter.new(source, numbers, [], debug, max_cycles)
