@@ -2,10 +2,9 @@ require_relative './stack.rb'
 require_relative './BrainFlakInterpreter.rb'
 require_relative './BrainFlueueInterpreter.rb'
 require_relative './ClassicInterpreter.rb'
-require_relative './MiniFlakInterpreter.rb'
 require_relative './BraceCheck.rb'
 
-VERSION_STRING =  "Brain-Flak Ruby Interpreter v1.5.0"
+VERSION_STRING =  "Brain-Flak Ruby Interpreter v1.5.1-dev"
 
 require 'optparse'
 
@@ -174,7 +173,10 @@ begin
   when "classic"
     interpreter = ClassicInterpreter.new(source, numbers, [], debug, max_cycles)
   when "miniflak"
-    interpreter = MiniFlakInterpreter.new(source.gsub("<","").gsub(">","").gsub("\[\]",""), numbers, [], debug, max_cycles)
+    while source =~ /\[\]/
+      source = source.gsub(/#.*\n/,"").gsub(/[^<>\[\]{}()]/,"").gsub("<","").gsub(">","").gsub("[]","")
+    end
+    interpreter = BrainFlakInterpreter.new(source, numbers, [], debug, max_cycles)
   when "brainflueue"
     interpreter = BrainFlueueInterpreter.new(source, numbers, [], debug, max_cycles)
   when "flueue"
