@@ -28,8 +28,11 @@ parser = OptionParser.new do |opts|
   opts.on("-d", "--debug", "Enables parsing of debug commands.") do
     debug = true
   end
-  opts.on("-q","--quiet-debug", "Makes debug produce less output.") do
+  opts.on("-qd","--quiet-debug", "Makes debug produce less output.") do
     quiet = true
+    if !debug
+      debug = true
+    end
   end
   opts.on("-H", "--help-debug", "Prints a list of debug flags and what they do.") do
     flag_desc= [
