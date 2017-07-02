@@ -9,6 +9,7 @@ VERSION_STRING =  "Brain-Flak Ruby Interpreter v1.5.1-dev"
 require 'optparse'
 
 debug = false
+quiet = false
 do_in = true
 do_out = true
 ascii_in = false
@@ -27,7 +28,9 @@ parser = OptionParser.new do |opts|
   opts.on("-d", "--debug", "Enables parsing of debug commands.") do
     debug = true
   end
-
+  opts.on("-q","--quiet-debug", "Makes debug produce less output.") do
+    quiet = true
+  end
   opts.on("-H", "--help-debug", "Prints a list of debug flags and what they do.") do
     flag_desc= [
       ["ac","Prints the current stack as ASCII characters"],
@@ -141,7 +144,7 @@ else
   end
 end
 
-if debug then
+if debug and !quiet then
   STDERR.puts "Debug mode... ENGAGED!"
 end
 
@@ -193,7 +196,7 @@ begin
   if do_out then
     begin
       #Output current state
-      if debug then
+      if debug and !quiet then
         puts interpreter.debug_info_full(ascii_out)
       else
         interpreter.active_stack.print_stack(ascii_out, reverse)
@@ -216,15 +219,14 @@ rescue BrainFlakError => e
 rescue Interrupt
   STDERR.puts "\nKeyboard Interrupt"
   STDERR.puts interpreter.inspect
-
-  if debug then
+  if debug and !quiet then
     STDERR.puts interpreter.debug_info
   end
 
 rescue RuntimeError => e
   if e.to_s == "Second Interrupt"
     STDERR.puts interpreter.inspect
-    if debug then
+    if debug and !quiet then
       STDERR.puts interpreter.debug_info
     end
   else
