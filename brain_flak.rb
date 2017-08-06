@@ -4,7 +4,7 @@ require_relative './BrainFlueueInterpreter.rb'
 require_relative './ClassicInterpreter.rb'
 require_relative './BraceCheck.rb'
 
-VERSION_STRING =  "Brain-Flak Ruby Interpreter v1.5.1-dev"
+VERSION_STRING =  "Brain-Flak Ruby Interpreter v1.5.2"
 
 require 'optparse'
 
@@ -172,14 +172,13 @@ begin
     interpreter = BrainFlakInterpreter.new(source, numbers, [], debug, max_cycles)
   when "classic"
     interpreter = ClassicInterpreter.new(source, numbers, [], debug, max_cycles)
-  when "miniflak"
+  when "miniflak", "mini"
+    source = source.gsub(/#.*\n/,"").gsub(/[^\[\]{}()]/,"") # Parsing is done here so that we can strip `[]` properly
     while source =~ /\[\]/
-      source = source.gsub(/#.*\n/,"").gsub(/[^<>\[\]{}()]/,"").gsub("<","").gsub(">","").gsub("[]","")
+      source = source.gsub("[]","")
     end
     interpreter = BrainFlakInterpreter.new(source, numbers, [], debug, max_cycles)
-  when "brainflueue"
-    interpreter = BrainFlueueInterpreter.new(source, numbers, [], debug, max_cycles)
-  when "flueue"
+  when "brainflueue", "flueue"
     interpreter = BrainFlueueInterpreter.new(source, numbers, [], debug, max_cycles)
   else 
     raise BrainFlakError.new("No language called '%s'." % mode, 0)
