@@ -172,16 +172,13 @@ begin
     interpreter = BrainFlakInterpreter.new(source, numbers, [], debug, max_cycles)
   when "classic"
     interpreter = ClassicInterpreter.new(source, numbers, [], debug, max_cycles)
-  when "miniflak"
-    source = source.gsub(/#.*\n/,"").gsub(/[^\[\]{}()]/,"")
+  when "miniflak", "mini"
+    source = source.gsub(/#.*\n/,"").gsub(/[^\[\]{}()]/,"") # Parsing is done here so that we can strip `[]` properly
     while source =~ /\[\]/
       source = source.gsub("[]","")
     end
-    puts source
     interpreter = BrainFlakInterpreter.new(source, numbers, [], debug, max_cycles)
-  when "brainflueue"
-    interpreter = BrainFlueueInterpreter.new(source, numbers, [], debug, max_cycles)
-  when "flueue"
+  when "brainflueue", "flueue"
     interpreter = BrainFlueueInterpreter.new(source, numbers, [], debug, max_cycles)
   else 
     raise BrainFlakError.new("No language called '%s'." % mode, 0)
