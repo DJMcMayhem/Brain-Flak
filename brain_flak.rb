@@ -173,7 +173,7 @@ begin
   when "classic"
     interpreter = ClassicInterpreter.new(source, numbers, [], debug, max_cycles)
   when "miniflak", "mini"
-    source = source.gsub(/#.*\n/,"").gsub(/[^\[\]{}()]/,"") # Parsing is done here so that we can strip `[]` properly
+    source = source.gsub(/#.*(\n|$)/,"").gsub(/[^\[\]{}()]/,"") # Parsing is done here so that we can strip `[]` properly
     while source =~ /\[\]/
       source = source.gsub("[]","")
     end
