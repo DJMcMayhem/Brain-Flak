@@ -27,7 +27,11 @@ class Interpreter
     # Strip comments
     source = source.gsub(/(^[^#]*)#.*(\n|$)/, '\1')
     # Strips the source of any characters that aren't brackets or part of debug flags
-    @source = source.gsub(/(?<=^|[()\[\]<>{}]|\s)[^@()\[\]<>{}\s]*/, "")
+    if debug then
+      @source = source.gsub(/(?<=^|[()\[\]<>{}]|\s)[^@()\[\]<>{}\s]*/, "")
+    else
+      @source = source.gsub(/[^()\[\]<>{}]*/, "")
+    end
     # Strips extra whitespace
     @source = @source.gsub(/\s/,"")
     # Strips extra @s
