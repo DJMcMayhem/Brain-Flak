@@ -26,12 +26,16 @@ class Interpreter
   def initialize(source, left_in, right_in, debug, max_cycles)
     # Strip comments
     source = source.gsub(/(^[^#]*)#.*(\n|$)/, '\1')
-    # Strips the source of any characters that aren't brackets or part of debug flags
-    @source = source.gsub(/(?<=^|[()\[\]<>{}]|\s)[^@()\[\]<>{}\s]*/, "")
-    # Strips extra whitespace
-    @source = @source.gsub(/\s/,"")
-    # Strips extra @s
-    @source = @source.gsub(/@+(?=[()\[\]<>{}]|$)/, "")
+    # Strips the source of any characters that aren't brackets (or part of debug flags in debug mode)
+    if debug then
+      @source = source.gsub(/(?<=^|[()\[\]<>{}]|\s)[^@()\[\]<>{}\s]*/, "")
+      # Strips extra whitespace
+      @source = @source.gsub(/\s/,"")
+      # Strips extra @s
+      @source = @source.gsub(/@+(?=[()\[\]<>{}]|$)/, "")
+    else
+      @source = source.gsub(/[^()\[\]<>{}]*/, "")
+    end
     @left = Stack.new('Left')
     @right = Stack.new('Right')
     @main_stack = []
