@@ -6,6 +6,11 @@ require_relative './Interpreter.rb'
 
 class ClassicInterpreter < Interpreter
 
+  def initialize(source, left_in, right_in, debug, max_cycles, ascii_mode)
+    super(source, left_in, right_in, debug, max_cycles)
+    @ascii_mode = ascii_mode
+  end
+
   # Nilads ~~~~~~~~~~~~~~~~~~~~~
  
   def round_nilad()
@@ -60,7 +65,11 @@ class ClassicInterpreter < Interpreter
 
   def close_square()
     data = main_stack.pop()
-    puts @current_value
+    if @ascii_mode
+      print (@current_value % 2 ** 32).chr(Encoding::UTF_8)
+    else
+      puts @current_value
+     end
     @current_value += data[1]
   end
 

@@ -171,7 +171,7 @@ begin
   when "brainflak"
     interpreter = BrainFlakInterpreter.new(source, numbers, [], debug, max_cycles)
   when "classic"
-    interpreter = ClassicInterpreter.new(source, numbers, [], debug, max_cycles)
+    interpreter = ClassicInterpreter.new(source, numbers, [], debug, max_cycles, ascii_out)
   when "miniflak", "mini"
     source = source.gsub(/#.*(\n|$)/,"").gsub(/[^\[\]{}()]/,"") # Parsing is done here so that we can strip `[]` properly
     while source =~ /\[\]/
