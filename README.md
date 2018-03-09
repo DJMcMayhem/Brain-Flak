@@ -15,7 +15,7 @@ The only valid characters in a Brain-Flak program are `()[]{}<>`, and they must 
  - `{}` Pop the active stack. Evaluates to the popped value.
  - `<>` Toggle the active stack. Evaluates to zero.
 
-These are concatenated together when they are evaluated. So if we had a '3' on top of the active stack, this snippet:
+These are commands are added together when they are evaluated. So if we had a '3' on top of the active stack, this snippet:
 
     ()(){}
   
@@ -28,7 +28,7 @@ The monads take one argument, a chunk of Brain-Flak code. Here are all of the mo
  - `{foo}` While zero is not on the top of the stack, do foo.
  - `<foo>` Execute foo, but evaluate it as 0.
 
-These functions will also return the value inside of them, so
+The `(...)` monad will also evaluate to it's argument, so
 
     (()()())
 
@@ -38,7 +38,7 @@ Will push 3 but
 
 Will push 3 *twice*.
 
-The `{}` will evaluate to the sum of all runs.  So if we had '3' and '4' on the top of the stack:
+The `{...}` monad will evaluate to the sum of all runs.  So if we had '3' and '4' on the top of the stack:
 
     {{}}
 
