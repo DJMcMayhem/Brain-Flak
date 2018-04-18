@@ -15,7 +15,7 @@ The only valid characters in a Brain-Flak program are `()[]{}<>`, and they must 
  - `{}` Pop the active stack. Evaluates to the popped value.
  - `<>` Toggle the active stack. Evaluates to zero.
 
-These are commands are added together when they are evaluated. So if we had a '3' on top of the active stack, this snippet:
+These commands are added together when they are evaluated. So if we had a '3' on top of the active stack, this snippet:
 
     ()(){}
   
