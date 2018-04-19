@@ -28,7 +28,7 @@ The monads take one argument, a chunk of Brain-Flak code. Here are all of the mo
  - `{foo}` While zero is not on the top of the stack, do foo.
  - `<foo>` Execute foo, but evaluate it as 0.
 
-The `(...)` monad will also evaluate to it's argument, so
+The `(...)` monad will also evaluate to its argument, so
 
     (()()())
 
